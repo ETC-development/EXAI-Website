@@ -6,4 +6,5 @@ coverage
 dist
 *.log
 docs
-supabase/migrations
+supabase/*
+scripts

@@ -6,14 +6,16 @@ const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
 });
 
-const parsed = envSchema.safeParse(process.env);
+export function getEnv() {
+  const parsed = envSchema.safeParse(process.env);
 
-if (!parsed.success) {
-  throw new Error(
-    `Invalid environment variables: ${parsed.error.issues
-      .map((issue) => issue.path.join("."))
-      .join(", ")}`,
-  );
+  if (!parsed.success) {
+    throw new Error(
+      `Invalid environment variables: ${parsed.error.issues
+        .map((issue) => issue.path.join("."))
+        .join(", ")}`,
+    );
+  }
+
+  return parsed.data;
 }
-
-export const env = parsed.data;
