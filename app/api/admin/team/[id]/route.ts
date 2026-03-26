@@ -6,14 +6,14 @@ const adminRoles = ["staff", "super_admin"] as const;
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const authz = await requireAdmin(request, [...adminRoles]);
   if (!authz.ok) {
     return NextResponse.json({ error: authz.reason }, { status: authz.status });
   }
 
-  const teamId = params.id;
+  const teamId = (await params).id;
   const supabase = createSupabaseServerClient();
 
   const { data: team, error: teamError } = await supabase
