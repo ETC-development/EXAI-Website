@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 const querySchema = z.object({
   email: z.string().email(),
 });
 
 export async function GET(request: Request) {
+  const limited = await enforceRateLimit(request, "check");
+  if (limited) return limited;
+
   const url = new URL(request.url);
   const parsed = querySchema.safeParse({
     email: url.searchParams.get("email"),

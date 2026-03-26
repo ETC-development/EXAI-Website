@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 const submitTeamSchema = z.object({
   team_id: z.string().uuid(),
@@ -9,6 +10,9 @@ const submitTeamSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const limited = await enforceRateLimit(request, "submit-team");
+  if (limited) return limited;
+
   const payload = await request.json().catch(() => null);
   const parsed = submitTeamSchema.safeParse(payload);
 

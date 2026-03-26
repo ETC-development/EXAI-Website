@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 const querySchema = z.object({
   token: z.string().trim().min(1),
 });
 
 export async function GET(request: Request) {
+  const limited = await enforceRateLimit(request, "team-by-token");
+  if (limited) return limited;
+
   const url = new URL(request.url);
   const parsed = querySchema.safeParse({
     token: url.searchParams.get("token"),
