@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { MentorCard } from "./MentorCard";
@@ -18,26 +18,41 @@ interface MentorCarouselProps {
 
 export function MentorCarousel({ mentors, visibleCount = 4 }: MentorCarouselProps) {
   const [startIndex, setStartIndex] = useState(0);
+  const [slots, setSlots] = useState(visibleCount);
+
+  useEffect(() => {
+    const updateSlots = () => {
+      if (window.innerWidth < 640) {
+        setSlots(1);
+      } else if (window.innerWidth < 1024) {
+        setSlots(2);
+      } else if (window.innerWidth < 1280) {
+        setSlots(3);
+      } else {
+        setSlots(visibleCount);
+      }
+    };
+
+    updateSlots();
+    window.addEventListener("resize", updateSlots);
+    return () => window.removeEventListener("resize", updateSlots);
+  }, [visibleCount]);
+
+  const maxStart = Math.max(0, mentors.length - slots);
 
   const handleNext = () => {
-    setStartIndex((prev) => (prev + 1) % mentors.length);
+    setStartIndex((prev) => (prev >= maxStart ? 0 : prev + 1));
   };
 
   const handlePrev = () => {
-    setStartIndex((prev) => (prev - 1 + mentors.length) % mentors.length);
+    setStartIndex((prev) => (prev <= 0 ? maxStart : prev - 1));
   };
 
-  // Get visible mentors with circular logic
-  const getVisibleMentors = () => {
-    const visible = [];
-    for (let i = 0; i < visibleCount; i++) {
-      const index = (startIndex + i) % mentors.length;
-      visible.push({ ...mentors[index], uniqueKey: `${startIndex}-${i}` });
-    }
-    return visible;
-  };
-
-  const visibleMentors = getVisibleMentors();
+  const shiftX = useMemo(
+    // Step width = (container + gap) / slots, so gap contribution is 24 / slots.
+    () => `calc(-${startIndex * (100 / slots)}% - ${startIndex * (24 / slots)}px)`,
+    [slots, startIndex],
+  );
 
   return (
     <div className="relative flex items-center gap-8">
@@ -53,21 +68,24 @@ export function MentorCarousel({ mentors, visibleCount = 4 }: MentorCarouselProp
       {/* Mentors Container */}
       <div className="flex-1 overflow-hidden">
         <motion.div
-          key={startIndex}
-          initial={{ x: 0 }}
-          animate={{ x: 0 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          animate={{ x: shiftX }}
+          transition={{ duration: 0.45, ease: "easeInOut" }}
+          className="flex gap-6"
         >
-          {visibleMentors.map((mentor, index) => (
+          {mentors.map((mentor, index) => (
             <motion.div
-              key={mentor.uniqueKey}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ 
-                duration: 0.3,
-                delay: index * 0.05,
-                ease: "easeOut"
+              key={`${mentor.name}-${index}`}
+              style={{
+                flex: `0 0 calc(${100 / slots}% - ${(24 * (slots - 1)) / slots}px)`,
               }}
+              animate={{
+                scale:
+                  index >= startIndex && index < startIndex + slots ? 1 : 0.94,
+                opacity:
+                  index >= startIndex && index < startIndex + slots ? 1 : 0.55,
+              }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="origin-center"
             >
               <MentorCard
                 name={mentor.name}
