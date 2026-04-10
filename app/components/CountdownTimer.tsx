@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 
 interface TimeLeft {
   days: number;
@@ -10,80 +9,110 @@ interface TimeLeft {
   seconds: number;
 }
 
-export function CountdownTimer({ targetDate }: { targetDate: Date }) {
-  const calculateTimeLeft = useCallback((): TimeLeft => {
-    const difference = +targetDate - +new Date();
-    if (difference > 0) {
-      return {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    }
-    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-  }, [targetDate]);
+function computeTimeLeft(targetDate: Date): { left: TimeLeft; ended: boolean } {
+  const difference = +targetDate - +new Date();
+  if (difference <= 0) {
+    return {
+      ended: true,
+      left: { days: 0, hours: 0, minutes: 0, seconds: 0 },
+    };
+  }
+  return {
+    ended: false,
+    left: {
+      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((difference / 1000 / 60) % 60),
+      seconds: Math.floor((difference / 1000) % 60),
+    },
+  };
+}
 
+export function CountdownTimer({ targetDate }: { targetDate: Date }) {
+  const [mounted, setMounted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
+  const [ended, setEnded] = useState(false);
 
   useEffect(() => {
-    setTimeLeft(calculateTimeLeft());
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [calculateTimeLeft]);
+    setMounted(true);
+  }, []);
 
-  const TimeUnit = ({ value, label }: { value: number; label: string }) => (
-    <div className="relative group">
-      {/* Glow effect */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-[#14b4ba] to-[#079db5] rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity"></div>
-      
-      {/* Card */}
-      <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-xl border border-[#14b4ba]/30 rounded-2xl p-6 min-w-[120px] shadow-2xl">
-        {/* Accent line */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-transparent via-[#14b4ba] to-transparent rounded-full"></div>
-        
-        {/* Number with flip animation */}
-        <motion.div
-          key={value}
-          initial={{ rotateX: 90, opacity: 0 }}
-          animate={{ rotateX: 0, opacity: 1 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className="text-6xl font-black bg-gradient-to-b from-[#14b4ba] to-[#079db5] bg-clip-text text-transparent mb-2"
-          style={{ 
-            textShadow: "0 0 30px rgba(20, 180, 186, 0.3)",
-            fontVariantNumeric: "tabular-nums"
-          }}
-        >
-          {value.toString().padStart(2, "0")}
-        </motion.div>
-        
-        {/* Label */}
-        <div className="text-xs text-slate-400 uppercase tracking-[0.2em] font-bold">
-          {label}
+  useEffect(() => {
+    if (!mounted) return;
+    const tick = () => {
+      const { left, ended: isEnded } = computeTimeLeft(targetDate);
+      setTimeLeft(left);
+      setEnded(isEnded);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [mounted, targetDate]);
+
+  const units: { value: number; label: string }[] = [
+    { value: timeLeft.days, label: "Days" },
+    { value: timeLeft.hours, label: "Hours" },
+    { value: timeLeft.minutes, label: "Min" },
+    { value: timeLeft.seconds, label: "Sec" },
+  ];
+
+  if (!mounted) {
+    return (
+      <div
+        className="mx-auto max-w-xl rounded-2xl border border-[#14b4ba]/20 bg-slate-900/50 px-4 py-6 backdrop-blur-sm sm:px-8"
+        aria-hidden
+      >
+        <div className="grid grid-cols-4 gap-2 sm:gap-4">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="flex flex-col items-center gap-2">
+              <div className="h-12 w-full animate-pulse rounded-lg bg-slate-800/80 sm:h-14" />
+              <div className="h-3 w-10 animate-pulse rounded bg-slate-800/60" />
+            </div>
+          ))}
         </div>
-        
-        {/* Bottom accent */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#079db5]/20 to-transparent"></div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (ended) {
+    return (
+      <div className="mx-auto max-w-xl rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/40 to-slate-900/60 px-6 py-8 text-center backdrop-blur-sm">
+        <p className="text-lg font-bold text-emerald-300 sm:text-xl">The event is underway</p>
+        <p className="mt-1 text-sm text-slate-400">See you at EXAI — check the agenda for what&apos;s next.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex gap-6 justify-center flex-wrap items-center">
-      <TimeUnit value={timeLeft.days} label="Days" />
-      <div className="text-4xl font-black text-[#14b4ba]/30">:</div>
-      <TimeUnit value={timeLeft.hours} label="Hours" />
-      <div className="text-4xl font-black text-[#14b4ba]/30">:</div>
-      <TimeUnit value={timeLeft.minutes} label="Minutes" />
-      <div className="text-4xl font-black text-[#14b4ba]/30">:</div>
-      <TimeUnit value={timeLeft.seconds} label="Seconds" />
+    <div className="mx-auto max-w-xl">
+      <div
+        className="rounded-2xl border border-[#14b4ba]/25 bg-slate-900/70 px-3 py-5 shadow-[0_0_40px_-12px_rgba(20,180,186,0.35)] backdrop-blur-md sm:px-6 sm:py-6"
+        role="timer"
+        aria-label="Time remaining until the event starts"
+      >
+        <div className="grid grid-cols-4 gap-0 sm:gap-2">
+          {units.map((u, i) => (
+            <div
+              key={u.label}
+              className={`flex min-w-0 flex-col items-center px-0.5 py-1 sm:px-2 ${
+                i < 3 ? "border-r border-[#14b4ba]/20" : ""
+              }`}
+            >
+              <span className="w-full text-center text-2xl font-black tabular-nums tracking-tight text-white sm:text-4xl md:text-5xl">
+                {u.value.toString().padStart(2, "0")}
+              </span>
+              <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#14b4ba]/90 sm:text-xs">
+                {u.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
