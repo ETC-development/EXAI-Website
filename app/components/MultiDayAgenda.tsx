@@ -17,44 +17,46 @@ interface AgendaDay {
 const agendaDays: AgendaDay[] = [
   {
     day: 1,
-    date: "May 15, 2026",
+    date: "Thursday - Day 1",
     events: [
-      { time: "09:00 AM", title: "Registration & Welcome Coffee", description: "Check-in, badge collection, and networking" },
-      { time: "10:00 AM", title: "Opening Ceremony", description: "Welcome speech, introduction to challenges and rules" },
-      { time: "10:30 AM", title: "Team Formation", description: "Final team assembly and workspace setup" },
-      { time: "11:00 AM", title: "Hackathon Kickoff", description: "Teams start working on challenges" },
-      { time: "01:00 PM", title: "Lunch & Networking", description: "Catered lunch and informal networking session" },
-      { time: "03:00 PM", title: "Mentor Office Hours", description: "First mentor session - technical guidance" },
-      { time: "06:00 PM", title: "Evening Break", description: "Dinner and relaxation time" },
-      { time: "08:00 PM", title: "Workshop: Advanced ML Techniques", description: "Optional technical workshop by industry experts" },
+      { time: "16:00 - 16:30", title: "Check-in", description: "Participant arrival and check-in process." },
+      { time: "16:30 - 17:00", title: "Opening ceremony", description: "Official opening and event briefing." },
+      { time: "17:00 - 19:00", title: "Talk by Prof. Belhouari", description: "Main keynote session." },
+      { time: "19:00 - 20:00", title: "Start working", description: "Teams begin implementation." },
+      { time: "20:00 - 21:00", title: "Dinner service", description: "Dinner break for participants." },
+      { time: "21:00 - 08:00", title: "Deep Work Session", description: "Overnight focused work block." },
+      { time: "22:00 - 00:00", title: "Fun games (Optional)", description: "Optional social activities." },
+      { time: "00:00 - 01:00", title: "Late-night coffee and snacks", description: "Refreshments and short recharge break." },
     ],
   },
   {
     day: 2,
-    date: "May 16, 2026",
+    date: "Friday - Day 2",
     events: [
-      { time: "09:00 AM", title: "Day 2 Kickoff", description: "Daily standup and progress updates" },
-      { time: "10:00 AM", title: "Checkpoint #1", description: "Teams present 24-hour progress to mentors" },
-      { time: "12:00 PM", title: "Lunch Break", description: "Catered lunch and team discussions" },
-      { time: "02:00 PM", title: "Deep Work Session", description: "Focused development time" },
-      { time: "04:00 PM", title: "Mentor Office Hours", description: "Second mentor session - problem solving" },
-      { time: "06:00 PM", title: "Dinner & Entertainment", description: "Evening meal and team activities" },
-      { time: "08:00 PM", title: "Lightning Talks", description: "Quick tech talks by sponsors and mentors" },
-      { time: "10:00 PM", title: "Midnight Sprint Begins", description: "Final push - caffeinated coding session" },
+      { time: "08:00 - 09:00", title: "Breakfast Service", description: "Morning breakfast for participants." },
+      { time: "09:30 - 12:00", title: "Work session", description: "Core development session." },
+      { time: "12:30 - 13:30", title: "Friday Prayer Break", description: "Scheduled prayer break." },
+      { time: "14:00 - 15:00", title: "Lunch Service", description: "Lunch for participants." },
+      { time: "15:00 - 17:00", title: "AI workshops (Optional)", description: "Optional workshops for participants." },
+      { time: "17:00 - 17:30", title: "Coffee Break", description: "Short recovery break." },
+      { time: "17:30 - 20:30", title: "Deep work", description: "Extended focused development session." },
+      { time: "20:30 - 21:30", title: "Dinner Service", description: "Dinner for participants." },
+      { time: "21:30 - 08:00", title: "Deep Work Session", description: "Overnight implementation window." },
+      { time: "22:00 - 00:00", title: "Fun games (Optional)", description: "Optional social activities." },
+      { time: "00:00 - 01:00", title: "Late-night coffee/snacks break", description: "Coffee, snacks, and relaxation time." },
     ],
   },
   {
     day: 3,
-    date: "May 17, 2026",
+    date: "Saturday - Day 3",
     events: [
-      { time: "08:00 AM", title: "Final Sprint", description: "Last hours of development and testing" },
-      { time: "11:00 AM", title: "Submissions Deadline", description: "All projects must be submitted" },
-      { time: "11:30 AM", title: "Judging Begins", description: "Expert panel reviews all submissions" },
-      { time: "01:00 PM", title: "Lunch Break", description: "Final meal together" },
-      { time: "02:00 PM", title: "Top 10 Presentations", description: "Finalist teams present to judges and audience" },
-      { time: "04:30 PM", title: "Deliberation", description: "Judges finalize rankings" },
-      { time: "05:00 PM", title: "Awards Ceremony", description: "Winner announcements and prize distribution" },
-      { time: "06:00 PM", title: "Closing & Networking", description: "Final remarks and networking reception" },
+      { time: "08:00 - 09:00", title: "Breakfast Service", description: "Final day breakfast service." },
+      { time: "09:00 - 11:00", title: "Work", description: "Last implementation push." },
+      { time: "12:00", title: "Final submission", description: "Project submission deadline." },
+      { time: "12:00 - 13:30", title: "Lunch", description: "Lunch service for participants." },
+      { time: "13:30 - 16:00", title: "Evaluation and fun games/relaxation", description: "Judging period with activities for participants." },
+      { time: "16:00 - 17:00", title: "Coffee break", description: "Coffee break before final ceremony." },
+      { time: "17:00 - 18:00", title: "Closing Ceremony", description: "Final announcements and event closing." },
     ],
   },
 ];
@@ -82,7 +84,7 @@ export function MultiDayAgenda() {
           onClick={prevDay}
           disabled={currentDay === 0}
           variant="outline"
-          className="border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-30"
+          className="bg-[#14b4ba] border-[#14b4ba] text-white hover:bg-[#14b4ba]/10 hover:text-[#14b4ba] disabled:opacity-35 disabled:bg-slate-800 disabled:border-slate-700 disabled:text-slate-500"
         >
           <ChevronLeft className="w-4 h-4 mr-2" />
           Previous Day
@@ -108,7 +110,7 @@ export function MultiDayAgenda() {
           onClick={nextDay}
           disabled={currentDay === agendaDays.length - 1}
           variant="outline"
-          className="border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-30"
+          className="bg-[#079db5] border-[#079db5] text-white hover:bg-[#079db5]/10 hover:text-[#079db5] disabled:opacity-35 disabled:bg-slate-800 disabled:border-slate-700 disabled:text-slate-500"
         >
           Next Day
           <ChevronRight className="w-4 h-4 ml-2" />
