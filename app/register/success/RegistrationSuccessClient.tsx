@@ -202,7 +202,7 @@ export default function RegistrationSuccessClient({ type, inviteCode, soloCode }
               {registrationData?.type !== "solo" && type === "team-leader" && (
                 <li className="flex items-start gap-2">
                   <span className="text-teal-400 mt-1">•</span>
-                  <span>Share your team invite link with teammates (max 5 members)</span>
+                  <span>Share your team invite link with teammates (max 5 members including you)</span>
                 </li>
               )}
             </ul>

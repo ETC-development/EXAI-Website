@@ -2,17 +2,14 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
-import { 
-  Brain, 
-  Cpu, 
-  Image, 
-  TrendingUp, 
-  Zap, 
-  MessageSquare, 
-  Database,
+import {
+  Brain,
   ArrowRight,
   Users,
   Trophy,
+  Layers,
+  LineChart,
+  FlaskConical,
 } from "lucide-react";
 import { CountdownTimer } from "@/app/components/CountdownTimer";
 import { ChallengeCard } from "@/app/components/ChallengeCard";
@@ -27,13 +24,22 @@ import { Button } from "@/app/components/ui/button";
 export default function LandingPage() {
   const eventDate = new Date("2026-05-07T09:00:00");
 
-  const challenges = [
-    { title: "Edge AI & Model Compression", icon: Cpu, gradient: "linear-gradient(135deg, #14b4ba 0%, #0f8f94 100%)" },
-    { title: "AI-Generated Image Detection", icon: Image, gradient: "linear-gradient(135deg, #079db5 0%, #14b4ba 100%)" },
-    { title: "Time Series Forecasting", icon: TrendingUp, gradient: "linear-gradient(135deg, #0f8f94 0%, #079db5 100%)" },
-    { title: "Reinforcement Learning Optimization", icon: Zap, gradient: "linear-gradient(135deg, #14b4ba 0%, #079db5 100%)" },
-    { title: "NLP & Language Understanding", icon: MessageSquare, gradient: "linear-gradient(135deg, #079db5 0%, #0f8f94 100%)" },
-    { title: "Data Engineering Pipeline", icon: Database, gradient: "linear-gradient(135deg, #0f8f94 0%, #14b4ba 100%)" },
+  const challengePillars = [
+    {
+      title: "High-Level",
+      icon: Layers,
+      gradient: "linear-gradient(135deg, #14b4ba 0%, #0f8f94 100%)",
+    },
+    {
+      title: "Kaggle-based",
+      icon: LineChart,
+      gradient: "linear-gradient(135deg, #079db5 0%, #14b4ba 100%)",
+    },
+    {
+      title: "Research-oriented",
+      icon: FlaskConical,
+      gradient: "linear-gradient(135deg, #0f8f94 0%, #079db5 100%)",
+    },
   ];
 
   const mentors = [
@@ -142,7 +148,7 @@ export default function LandingPage() {
                 variant="outline"
                 className="border-2 border-[#14b4ba] bg-transparent text-[#14b4ba] px-8 py-6 text-lg font-bold hover:bg-[#14b4ba] hover:text-white hover:shadow-lg hover:shadow-[#14b4ba]/30 hover:scale-[1.02] transition-all duration-300"
               >
-                Explore Challenges
+                Challenge format
               </Button>
             </a>
           </motion.div>
@@ -227,19 +233,22 @@ export default function LandingPage() {
             <h2 className="text-5xl md:text-6xl font-black mb-6 text-[#14b4ba]">
               Challenges
             </h2>
-            <p className="text-xl text-slate-300">Six exciting tracks to test your AI expertise</p>
+            <p className="text-xl text-slate-300 max-w-2xl mx-auto">
+            EXAI is not simply a competition. It is an immersive environment where participants demonstrate advanced technical ability, creativity, and problem-
+solving skills under realistic constraints.
+            </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {challenges.map((challenge, index) => (
+          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {challengePillars.map((pillar, index) => (
               <motion.div
-                key={index}
+                key={pillar.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
-                <ChallengeCard {...challenge} />
+                <ChallengeCard {...pillar} />
               </motion.div>
             ))}
           </div>

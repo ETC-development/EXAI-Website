@@ -6,7 +6,7 @@ import { ExaiFullLogo } from "@/app/components/ExaiLogo";
 const quickLinks = [
   { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
-  { label: "Challenges", href: "#challenges" },
+  { label: "Format", href: "#challenges" },
   { label: "Mentors", href: "#mentors" },
   { label: "Agenda", href: "#agenda" },
   { label: "Register", href: "/register" },

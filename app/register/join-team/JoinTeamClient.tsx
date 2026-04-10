@@ -87,7 +87,23 @@ export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
     });
     const json = await res.json().catch(() => ({}));
     setLoading(false);
-    if (!res.ok) { setError(json?.error ?? "Failed to join team"); return; }
+    if (!res.ok) {
+      const code = json?.error as string | undefined;
+      const hint = typeof json?.hint === "string" ? json.hint : "";
+      const details = typeof json?.details === "string" ? json.details : "";
+      if (code === "USER_ALREADY_IN_TEAM") {
+        setError("This email is already registered on a team.");
+      } else if (code === "TEAM_NOT_JOINABLE") {
+        setError("This team is full, closed, or the invite link is no longer valid.");
+      } else if (code === "DATABASE_SCHEMA_OUT_OF_DATE") {
+        setError(hint || "Server database needs an update. Please contact the organizers.");
+      } else if (code === "INVALID_PAYLOAD") {
+        setError("Please check all required fields and try again.");
+      } else {
+        setError([code, hint, details].filter(Boolean).join(" — ") || "Failed to join team.");
+      }
+      return;
+    }
     router.push(`/register/success?type=team-member&inviteCode=${encodeURIComponent(formData.invite_token)}`);
   };
 

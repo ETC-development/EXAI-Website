@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { firstRpcRow } from "@/lib/supabase/rpc-result";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
 const yearOfStudyEnum = z.enum(["1", "2", "3", "4", "5", "master", "phd", "other"]);
@@ -61,15 +62,34 @@ export async function POST(request: Request) {
   });
 
   if (error) {
-    if (error.message.includes("USER_ALREADY_IN_TEAM")) {
+    const msg = error.message || "";
+    if (msg.includes("USER_ALREADY_IN_TEAM")) {
       return NextResponse.json({ error: "USER_ALREADY_IN_TEAM" }, { status: 409 });
     }
-
-    return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 });
+    if (msg.includes("phone") && msg.includes("does not exist")) {
+      console.error("[create-team] DB schema missing users.phone — apply migration 0006_users_phone.sql");
+      return NextResponse.json(
+        { error: "DATABASE_SCHEMA_OUT_OF_DATE", hint: "Apply Supabase migrations through 0006 (phone + RPC)." },
+        { status: 503 },
+      );
+    }
+    if (msg.includes("create_team_with_leader")) {
+      console.error("[create-team] RPC error:", msg);
+      return NextResponse.json(
+        { error: "DATABASE_SCHEMA_OUT_OF_DATE", hint: "Apply Supabase migrations (create_team_with_leader + phone)." },
+        { status: 503 },
+      );
+    }
+    console.error("[create-team] RPC error:", msg);
+    return NextResponse.json(
+      { error: "INTERNAL_ERROR", ...(process.env.NODE_ENV !== "production" ? { details: msg } : {}) },
+      { status: 500 },
+    );
   }
 
-  const row = data?.[0];
+  const row = firstRpcRow<{ team_id?: string; invite_token?: string }>(data);
   if (!row?.team_id || !row?.invite_token) {
+    console.error("[create-team] Unexpected RPC payload:", data);
     return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 });
   }
 
