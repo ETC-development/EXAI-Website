@@ -55,22 +55,22 @@ export function MentorCarousel({ mentors, visibleCount = 4 }: MentorCarouselProp
   );
 
   return (
-    <div className="relative flex items-center gap-8">
+    <div className="relative w-full">
       {/* Previous Button */}
       <button
         onClick={handlePrev}
-        className="flex-shrink-0 w-14 h-14 rounded-full bg-slate-900/80 backdrop-blur-sm border-2 border-[#14b4ba] text-[#14b4ba] hover:bg-[#14b4ba] hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg shadow-[#14b4ba]/20 hover:shadow-[#14b4ba]/40 hover:scale-110 z-10"
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-14 h-14 rounded-full bg-slate-900/80 backdrop-blur-sm border-2 border-[#14b4ba] text-[#14b4ba] hover:bg-[#14b4ba] hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg shadow-[#14b4ba]/20 hover:shadow-[#14b4ba]/40 hover:scale-110"
         aria-label="Previous mentor"
       >
         <ChevronLeft className="w-7 h-7" />
       </button>
 
       {/* Mentors Container */}
-      <div className="flex-1 overflow-hidden">
+      <div className="w-full overflow-hidden px-16 py-4">
         <motion.div
           animate={{ x: shiftX }}
           transition={{ duration: 0.45, ease: "easeInOut" }}
-          className="flex gap-6"
+          className="flex items-stretch gap-6"
         >
           {mentors.map((mentor, index) => (
             <motion.div
@@ -102,7 +102,7 @@ export function MentorCarousel({ mentors, visibleCount = 4 }: MentorCarouselProp
       {/* Next Button */}
       <button
         onClick={handleNext}
-        className="flex-shrink-0 w-14 h-14 rounded-full bg-slate-900/80 backdrop-blur-sm border-2 border-[#14b4ba] text-[#14b4ba] hover:bg-[#14b4ba] hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg shadow-[#14b4ba]/20 hover:shadow-[#14b4ba]/40 hover:scale-110 z-10"
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-14 h-14 rounded-full bg-slate-900/80 backdrop-blur-sm border-2 border-[#14b4ba] text-[#14b4ba] hover:bg-[#14b4ba] hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg shadow-[#14b4ba]/20 hover:shadow-[#14b4ba]/40 hover:scale-110"
         aria-label="Next mentor"
       >
         <ChevronRight className="w-7 h-7" />
