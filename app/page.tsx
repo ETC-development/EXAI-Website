@@ -164,11 +164,16 @@ export default function LandingPage() {
             <h2 className="text-5xl md:text-6xl font-black mb-6 text-[#14b4ba]">
               About EXAI
             </h2>
-            <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-              A 3-day intensive datathon bringing together Algeria's brightest minds to tackle real-world AI challenges 
-              in <span className="text-[#14b4ba] font-bold">Computer Vision</span>, <span className="text-[#14b4ba] font-bold">Natural Language Processing</span>, 
-              <span className="text-[#14b4ba] font-bold"> Reinforcement Learning</span>, and <span className="text-[#14b4ba] font-bold">Data Engineering</span>.
-            </p>
+            <div className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed space-y-4">
+              <p>
+                EXAI is a high-level Artificial Intelligence datathon designed as a proving ground
+                for emerging AI talent. The event brings together highly motivated participants to
+                tackle rigorous, state-of-the-art challenges that closely mirror real-world industry problems.
+              </p>
+              <p className="text-[#14b4ba] font-bold">
+                First ETC&apos;s Datathon
+              </p>
+            </div>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
