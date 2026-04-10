@@ -18,6 +18,12 @@ const yearToApi: Record<string, string> = {
   M2: "master",
 };
 
+const btnPrimaryJoin =
+  "flex-1 bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white py-6 font-bold border-0 shadow-lg shadow-[#14b4ba]/25 hover:shadow-[#14b4ba]/45 hover:scale-[1.02] transition-all duration-300 disabled:opacity-60 disabled:hover:scale-100";
+
+const btnOutlineJoin =
+  "w-full border-2 border-[#14b4ba] bg-transparent text-[#14b4ba] py-6 font-bold hover:bg-[#14b4ba] hover:text-white hover:shadow-lg hover:shadow-[#14b4ba]/25 hover:scale-[1.02] transition-all duration-300";
+
 type Props = { initialInviteCode?: string };
 
 export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
@@ -26,8 +32,12 @@ export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
     invite_token: initialInviteCode,
     fullName: "",
     email: "",
+    phone: "",
     school: "",
     year: "",
+    tshirt: "",
+    github: "",
+    linkedin: "",
   });
   const [teamData, setTeamData] = useState<{ teamName: string; members: { length: number } } | null>(null);
   const [error, setError] = useState("");
@@ -43,6 +53,7 @@ export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
   ];
 
   const years = ["L1", "L2", "L3", "M1", "M2"];
+  const tshirtSizes = ["XS", "S", "M", "L", "XL", "XXL"] as const;
 
   useEffect(() => {
     async function loadTeam() {
@@ -68,9 +79,10 @@ export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
         email: formData.email,
         school: formData.school,
         year_of_study: yearToApi[formData.year] ?? "3",
-        github: "",
-        linkedin: "",
-        tshirt_size: "M",
+        phone: formData.phone,
+        github: formData.github.trim() || "",
+        linkedin: formData.linkedin.trim() || "",
+        tshirt_size: formData.tshirt,
       }),
     });
     const json = await res.json().catch(() => ({}));
@@ -97,9 +109,7 @@ export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
             <h2 className="text-2xl font-black text-slate-100 mb-2">Invalid Invite Link</h2>
             <p className="text-slate-400 mb-6">{error}</p>
             <Link href="/register">
-              <Button className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white">
-                Back to Registration
-              </Button>
+              <Button className={btnPrimaryJoin}>Back to Registration</Button>
             </Link>
           </div>
         </motion.div>
@@ -188,6 +198,19 @@ export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
             />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-slate-200">Phone Number *</Label>
+            <Input
+              id="phone"
+              type="tel"
+              required
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              className="bg-slate-800 border-slate-700 text-slate-100 focus:border-purple-500"
+              placeholder="+213 ..."
+            />
+          </div>
+
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="school" className="text-slate-200">School *</Label>
@@ -222,6 +245,51 @@ export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
             </div>
           </div>
 
+          <div className="space-y-2">
+            <Label className="text-slate-200">T-shirt Size *</Label>
+            <Select
+              required
+              value={formData.tshirt}
+              onValueChange={(value) => setFormData({ ...formData, tshirt: value })}
+            >
+              <SelectTrigger className="bg-slate-800 border-slate-700 text-slate-100">
+                <SelectValue placeholder="Select size" />
+              </SelectTrigger>
+              <SelectContent>
+                {tshirtSizes.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {s}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="github" className="text-slate-200">GitHub (optional)</Label>
+              <Input
+                id="github"
+                type="url"
+                value={formData.github}
+                onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                className="bg-slate-800 border-slate-700 text-slate-100 focus:border-purple-500"
+                placeholder="https://github.com/..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="linkedin" className="text-slate-200">LinkedIn (optional)</Label>
+              <Input
+                id="linkedin"
+                type="url"
+                value={formData.linkedin}
+                onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                className="bg-slate-800 border-slate-700 text-slate-100 focus:border-purple-500"
+                placeholder="https://linkedin.com/in/..."
+              />
+            </div>
+          </div>
+
           {error && teamData && (
             <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
               <p className="text-red-400 text-sm">{error}</p>
@@ -229,15 +297,15 @@ export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
           )}
 
           <div className="flex gap-4 pt-4">
-            <Button 
-              type="submit" 
-              className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-6"
+            <Button
+              type="submit"
+              className={btnPrimaryJoin}
               disabled={loading || (teamData !== null && teamData.members.length >= 5)}
             >
               {loading ? "Joining..." : "Join Team"}
             </Button>
             <Link href="/register" className="flex-1">
-              <Button type="button" variant="outline" className="w-full border-slate-700 text-slate-300 hover:bg-slate-800 py-6">
+              <Button type="button" className={btnOutlineJoin}>
                 Cancel
               </Button>
             </Link>

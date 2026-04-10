@@ -9,12 +9,28 @@ import { Button } from "@/app/components/ui/button";
 type Props = {
   type: string | null;
   inviteCode: string | null;
+  soloCode: string | null;
 };
 
-export default function RegistrationSuccessClient({ type, inviteCode }: Props) {
+const btnPrimarySuccess =
+  "w-full bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white py-6 font-bold border-0 shadow-lg shadow-[#14b4ba]/25 hover:shadow-[#14b4ba]/45 hover:scale-[1.02] transition-all duration-300";
+
+const btnOutlineSuccess =
+  "w-full border-2 border-[#14b4ba] bg-transparent text-[#14b4ba] py-6 font-bold hover:bg-[#14b4ba] hover:text-white hover:shadow-lg hover:shadow-[#14b4ba]/25 hover:scale-[1.02] transition-all duration-300";
+
+export default function RegistrationSuccessClient({ type, inviteCode, soloCode }: Props) {
   const [registrationData, setRegistrationData] = useState<any>(null);
 
   useEffect(() => {
+    if (type === "solo" && soloCode) {
+      try {
+        const raw = typeof window !== "undefined" ? localStorage.getItem(`solo_${soloCode}`) : null;
+        if (raw) setRegistrationData(JSON.parse(raw));
+      } catch {
+        setRegistrationData(null);
+      }
+      return;
+    }
     async function load() {
       if (!inviteCode) return;
       const res = await fetch(`/api/team-by-token?token=${encodeURIComponent(inviteCode)}`);
@@ -30,7 +46,7 @@ export default function RegistrationSuccessClient({ type, inviteCode }: Props) {
       });
     }
     void load();
-  }, [inviteCode]);
+  }, [type, soloCode, inviteCode]);
 
   return (
     <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center px-4">
@@ -92,6 +108,40 @@ export default function RegistrationSuccessClient({ type, inviteCode }: Props) {
                     <span className="text-slate-400">Year:</span>
                     <span className="text-slate-100">{registrationData.year}</span>
                   </div>
+                  <div className="flex justify-between gap-4">
+                    <span className="text-slate-400 shrink-0">Phone:</span>
+                    <span className="text-slate-100 text-right break-all">{registrationData.phone}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">T-shirt:</span>
+                    <span className="text-slate-100">{registrationData.tshirt}</span>
+                  </div>
+                  {registrationData.github && (
+                    <div className="flex justify-between gap-4">
+                      <span className="text-slate-400 shrink-0">GitHub:</span>
+                      <a
+                        href={registrationData.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-teal-400 hover:underline text-right break-all min-w-0"
+                      >
+                        {registrationData.github}
+                      </a>
+                    </div>
+                  )}
+                  {registrationData.linkedin && (
+                    <div className="flex justify-between gap-4">
+                      <span className="text-slate-400 shrink-0">LinkedIn:</span>
+                      <a
+                        href={registrationData.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-teal-400 hover:underline text-right break-all min-w-0"
+                      >
+                        {registrationData.linkedin}
+                      </a>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-slate-400">Registration Code:</span>
                     <span className="text-teal-400 font-mono">{registrationData.registrationCode}</span>
@@ -165,13 +215,11 @@ export default function RegistrationSuccessClient({ type, inviteCode }: Props) {
             className="flex gap-4"
           >
             <Link href="/" className="flex-1">
-              <Button className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white py-6">
-                Back to Home
-              </Button>
+              <Button className={btnPrimarySuccess}>Back to Home</Button>
             </Link>
             {type === "team-leader" && (
               <Link href={`/register/join-team/${inviteCode}`} className="flex-1">
-                <Button variant="outline" className="w-full border-teal-500/50 text-teal-400 hover:bg-teal-500/10 py-6">
+                <Button type="button" className={btnOutlineSuccess}>
                   View Invite Link
                 </Button>
               </Link>

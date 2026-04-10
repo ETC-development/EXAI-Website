@@ -42,7 +42,7 @@ export async function GET(
   const { data: users } = userIds.length
     ? await supabase
         .from("users")
-        .select("id,name,email,github,linkedin,tshirt_size")
+        .select("id,name,email,phone,github,linkedin,tshirt_size")
         .in("id", userIds)
     : { data: [] };
 
@@ -57,6 +57,7 @@ export async function GET(
         role: m.role,
         name: u?.name ?? null,
         email: u?.email ?? null,
+        phone: u?.phone ?? null,
         github: u?.github ?? null,
         linkedin: u?.linkedin ?? null,
         tshirt_size: u?.tshirt_size ?? null,
