@@ -131,7 +131,7 @@ export default function TeamDetailsPage() {
             type="button"
             disabled={statusBusy}
             onClick={() => void setTeamStatus("accepted")}
-            className="bg-green-600 hover:bg-green-700 text-white border-0"
+            variant="adminSuccess"
           >
             <CheckCircle className="w-4 h-4 mr-2" />
             Accept
@@ -140,8 +140,7 @@ export default function TeamDetailsPage() {
             type="button"
             disabled={statusBusy}
             onClick={() => void setTeamStatus("pending")}
-            variant="outline"
-            className="border-yellow-600 text-yellow-500 hover:bg-yellow-600/10"
+            variant="adminWarning"
           >
             <Clock className="w-4 h-4 mr-2" />
             Pending
@@ -150,8 +149,7 @@ export default function TeamDetailsPage() {
             type="button"
             disabled={statusBusy}
             onClick={() => void setTeamStatus("rejected")}
-            variant="outline"
-            className="border-red-600 text-red-500 hover:bg-red-600/10"
+            variant="adminDanger"
           >
             <XCircle className="w-4 h-4 mr-2" />
             Reject
@@ -280,12 +278,12 @@ export default function TeamDetailsPage() {
 
       <div className="flex justify-between items-center">
         <Link href="/admin/teams">
-          <Button variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800">
+          <Button type="button" variant="adminMuted">
             Back
           </Button>
         </Link>
         <Link href={`/admin/evaluation/${teamId}`}>
-          <Button className="bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white border-0">
+          <Button type="button" variant="adminPrimary">
             Score team
           </Button>
         </Link>

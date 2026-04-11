@@ -108,10 +108,11 @@ export default function AdminLogin() {
               </div>
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white py-6 font-bold border-0 shadow-lg shadow-[#14b4ba]/30"
+              variant="adminPrimary"
+              className="w-full py-6 text-base font-bold shadow-lg shadow-[#14b4ba]/25"
             >
               {loading ? "Signing in..." : "Sign In"}
             </Button>

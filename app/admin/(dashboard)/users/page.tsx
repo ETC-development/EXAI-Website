@@ -122,12 +122,7 @@ export default function Users() {
               key={f}
               type="button"
               onClick={() => setFilter(f)}
-              variant={filter === f ? "default" : "outline"}
-              className={
-                filter === f
-                  ? "bg-gradient-to-r from-[#14b4ba] to-[#079db5] text-white border-0"
-                  : "border-slate-700 text-slate-300 hover:bg-slate-800"
-              }
+              variant={filter === f ? "adminPrimary" : "adminMuted"}
             >
               {f === "all" ? "All" : f === "in-team" ? "In team" : "No team"}
             </Button>

@@ -68,7 +68,7 @@ export default function AdminDashboardShell({
               <button
                 type="button"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="text-slate-400 hover:text-[#14b4ba] transition-colors"
+                className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800/70 hover:text-[#14b4ba] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#14b4ba]/45"
               >
                 {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -85,7 +85,7 @@ export default function AdminDashboardShell({
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                       isActive
                         ? "bg-gradient-to-r from-[#14b4ba]/20 to-[#079db5]/20 border border-[#14b4ba]/50 shadow-[0_0_20px_rgba(20,180,186,0.2)]"
-                        : "hover:bg-slate-800/50"
+                        : "hover:bg-slate-800/60 hover:border-slate-700/80 border border-transparent"
                     }`}
                   >
                     <item.icon
@@ -125,7 +125,7 @@ export default function AdminDashboardShell({
                 <Link href="/" className="block">
                   <button
                     type="button"
-                    className="w-full mt-2 flex items-center gap-2 px-4 py-2 text-slate-400 hover:text-[#14b4ba] transition-colors rounded-lg hover:bg-slate-800/50"
+                    className="w-full mt-2 flex items-center gap-2 px-4 py-2 rounded-lg text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-[#14b4ba] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#14b4ba]/40"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -141,7 +141,7 @@ export default function AdminDashboardShell({
                 <button
                   type="button"
                   onClick={() => void handleLogout()}
-                  className="w-full mt-2 flex items-center gap-2 px-4 py-2 text-slate-400 hover:text-red-400 transition-colors rounded-lg hover:bg-slate-800/50"
+                  className="w-full mt-2 flex items-center gap-2 px-4 py-2 rounded-lg text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-red-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40"
                 >
                   <LogOut className="w-4 h-4" />
                   <span className="text-sm font-bold">Logout</span>

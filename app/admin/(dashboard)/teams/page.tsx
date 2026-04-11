@@ -121,12 +121,7 @@ export default function Teams() {
               key={f}
               type="button"
               onClick={() => setFilter(f)}
-              variant={filter === f ? "default" : "outline"}
-              className={
-                filter === f
-                  ? "bg-gradient-to-r from-[#14b4ba] to-[#079db5] text-white border-0"
-                  : "border-slate-700 text-slate-300 hover:bg-slate-800"
-              }
+              variant={filter === f ? "adminPrimary" : "adminMuted"}
             >
               {f.charAt(0).toUpperCase() + f.slice(1)}
             </Button>
@@ -208,7 +203,7 @@ export default function Teams() {
                   </td>
                   <td className="px-6 py-4">
                     <Link href={`/admin/teams/${team.id}`}>
-                      <Button size="sm" className="bg-[#14b4ba] hover:bg-[#0f8f94] text-white border-0">
+                      <Button type="button" size="sm" variant="adminIcon" aria-label={`View ${team.name}`}>
                         <Eye className="w-4 h-4" />
                       </Button>
                     </Link>

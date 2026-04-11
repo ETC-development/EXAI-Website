@@ -138,12 +138,12 @@ export default function EvaluationPage() {
             type="button"
             disabled={saving}
             onClick={() => void handleSubmit()}
-            className="bg-gradient-to-r from-[#14b4ba] to-[#079db5] text-white border-0"
+            variant="adminPrimary"
           >
             {saving ? "Saving…" : "Save score"}
           </Button>
           <Link href="/admin/teams">
-            <Button type="button" variant="outline" className="border-slate-600">
+            <Button type="button" variant="adminMuted">
               Cancel
             </Button>
           </Link>
