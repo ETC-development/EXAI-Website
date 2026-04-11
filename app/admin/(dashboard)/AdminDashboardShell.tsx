@@ -13,7 +13,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { ExaiFullLogo } from "@/app/components/ExaiLogo";
+import { ExaiFullLogo, ExaiXLogo } from "@/app/components/ExaiLogo";
 import { useState } from "react";
 
 const navItems = [
@@ -61,9 +61,7 @@ export default function AdminDashboardShell({
               {isSidebarOpen ? (
                 <ExaiFullLogo size="small" />
               ) : (
-                <div className="w-8 h-8 bg-gradient-to-br from-[#14b4ba] to-[#079db5] rounded-lg flex items-center justify-center">
-                  <span className="text-white font-black text-sm">EX</span>
-                </div>
+                <ExaiXLogo className="h-8 w-8 shrink-0" />
               )}
               <button
                 type="button"
