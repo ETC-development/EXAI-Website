@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Search, Eye, Users as UsersIcon, Filter } from "lucide-react";
+import { Search, Eye, Users as UsersIcon, Filter, Download } from "lucide-react";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 import { PaginationBar } from "@/app/components/PaginationBar";
@@ -34,6 +34,7 @@ export default function Teams() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     setPage(1);
@@ -79,6 +80,31 @@ export default function Teams() {
     return () => ac.abort();
   }, [page, debouncedQ, filter]);
 
+  async function exportAcceptedCsv() {
+    setExporting(true);
+    try {
+      const res = await fetch("/api/admin/export/accepted-teams", { credentials: "include" });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        window.alert(j?.error ?? "Export failed");
+        return;
+      }
+      const blob = await res.blob();
+      const cd = res.headers.get("Content-Disposition");
+      let filename = `exai-accepted-teams.csv`;
+      const m = cd?.match(/filename="([^"]+)"/);
+      if (m?.[1]) filename = m[1];
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
+  }
+
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
       accepted: "bg-green-500/20 text-green-400 border-green-500/50",
@@ -110,14 +136,27 @@ export default function Teams() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-4xl font-black text-[#14b4ba] mb-2">Teams Management</h1>
           <p className="text-slate-400">Manage and review registered teams</p>
         </div>
-        <div className="flex items-center gap-2 text-slate-400">
-          <UsersIcon className="w-5 h-5" />
-          <span className="font-bold">{total} matching</span>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            type="button"
+            variant="adminMuted"
+            size="sm"
+            disabled={exporting}
+            onClick={() => void exportAcceptedCsv()}
+            className="gap-2"
+          >
+            <Download className="size-4" />
+            {exporting ? "Exporting…" : "Export accepted (CSV)"}
+          </Button>
+          <div className="flex items-center gap-2 text-slate-400">
+            <UsersIcon className="w-5 h-5" />
+            <span className="font-bold">{total} matching</span>
+          </div>
         </div>
       </div>
 
