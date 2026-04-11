@@ -26,7 +26,7 @@ export async function GET(request: Request) {
 
   const { data: teams, error: teamsError } = await supabase
     .from("teams")
-    .select("id,name,status,is_submitted,created_at")
+    .select("id,name,status,is_submitted,created_at,max_members")
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -37,6 +37,18 @@ export async function GET(request: Request) {
   const teamIds = teams?.map((t) => t.id) ?? [];
   if (teamIds.length === 0) {
     return NextResponse.json({ teams: [] }, { status: 200 });
+  }
+
+  const { data: leaderRows } = await supabase
+    .from("team_members")
+    .select("team_id, users(name)")
+    .eq("role", "leader")
+    .in("team_id", teamIds);
+
+  const leaderNameByTeam = new Map<string, string>();
+  for (const row of leaderRows ?? []) {
+    const u = row.users as { name?: string } | null;
+    if (row.team_id && u?.name) leaderNameByTeam.set(row.team_id, u.name);
   }
 
   const { data: scores } = await supabase
@@ -65,6 +77,8 @@ export async function GET(request: Request) {
         status: t.status,
         is_submitted: t.is_submitted,
         created_at: t.created_at,
+        max_members: t.max_members,
+        leader_name: leaderNameByTeam.get(t.id) ?? null,
         member_count: memberCountByTeam.get(t.id) ?? 0,
         score: scoreByTeam.get(t.id) ?? null,
       })),

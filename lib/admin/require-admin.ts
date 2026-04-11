@@ -1,5 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { parseAdminCookie, type AdminCookiePayload } from "@/lib/admin/cookie-auth";
+import { parseAdminCookie, normalizeAdminUsername, type AdminCookiePayload } from "@/lib/admin/cookie-auth";
 import type { AdminRole } from "@/lib/admin/admin-config";
 
 export type RequireAdminResult =
@@ -7,7 +7,7 @@ export type RequireAdminResult =
   | { ok: true; adminUser: { id: string; role: AdminRole; username: string } };
 
 function safeExtractUsername(payload: AdminCookiePayload): string {
-  return payload.username;
+  return normalizeAdminUsername(payload.username);
 }
 
 export async function requireAdmin(request: Request, allowedRoles: AdminRole[]) {

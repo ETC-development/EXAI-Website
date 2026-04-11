@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
-import { buildAdminCookie, verifyAdminCredentials, COOKIE_NAME } from "@/lib/admin/cookie-auth";
+import {
+  buildAdminCookie,
+  verifyAdminCredentials,
+  COOKIE_NAME,
+  normalizeAdminUsername,
+} from "@/lib/admin/cookie-auth";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const loginSchema = {
   async parse(body: unknown): Promise<{ username: string; password: string } | null> {
@@ -19,12 +25,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "INVALID_PAYLOAD" }, { status: 400 });
   }
 
-  const role = verifyAdminCredentials(parsed.username, parsed.password);
-  if (!role) {
+  if (!verifyAdminCredentials(parsed.username, parsed.password)) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
 
-  const cookieValue = buildAdminCookie(parsed.username, role);
+  const normalized = normalizeAdminUsername(parsed.username);
+  const supabase = createSupabaseServerClient();
+  const { data: adminRow, error: adminErr } = await supabase
+    .from("admin_users")
+    .select("id,role")
+    .eq("better_auth_user_id", normalized)
+    .maybeSingle();
+
+  if (adminErr || !adminRow) {
+    return NextResponse.json(
+      { error: "ADMIN_NOT_PROVISIONED", hint: "Add this user to public.admin_users (better_auth_user_id, role)." },
+      { status: 403 },
+    );
+  }
+
+  const dbRole = adminRow.role as "staff" | "super_admin";
+  const cookieValue = buildAdminCookie(normalized, dbRole);
   if (!cookieValue) {
     return NextResponse.json(
       { error: "SERVER_MISCONFIGURED" },
@@ -32,7 +53,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const response = NextResponse.json({ ok: true, role }, { status: 200 });
+  const response = NextResponse.json({ ok: true, role: dbRole }, { status: 200 });
   const isProd = process.env.NODE_ENV === "production";
 
   response.cookies.set(COOKIE_NAME, cookieValue, {

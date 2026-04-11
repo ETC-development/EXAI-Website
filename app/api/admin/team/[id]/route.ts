@@ -18,7 +18,7 @@ export async function GET(
 
   const { data: team, error: teamError } = await supabase
     .from("teams")
-    .select("id,name,status,is_submitted,created_at")
+    .select("id,name,status,is_submitted,created_at,invite_token,max_members")
     .eq("id", teamId)
     .maybeSingle();
 
@@ -31,7 +31,7 @@ export async function GET(
 
   const { data: memberRows, error: membersError } = await supabase
     .from("team_members")
-    .select("user_id,role")
+    .select("user_id,role,created_at")
     .eq("team_id", teamId);
 
   if (membersError) {
@@ -42,7 +42,7 @@ export async function GET(
   const { data: users } = userIds.length
     ? await supabase
         .from("users")
-        .select("id,name,email,phone,github,linkedin,tshirt_size")
+        .select("id,name,email,phone,github,linkedin,tshirt_size,school,year_of_study")
         .in("id", userIds)
     : { data: [] };
 
@@ -55,9 +55,12 @@ export async function GET(
       return {
         user_id: m.user_id,
         role: m.role,
+        joined_at: (m as { created_at?: string }).created_at ?? null,
         name: u?.name ?? null,
         email: u?.email ?? null,
         phone: u?.phone ?? null,
+        school: u?.school ?? null,
+        year_of_study: u?.year_of_study ?? null,
         github: u?.github ?? null,
         linkedin: u?.linkedin ?? null,
         tshirt_size: u?.tshirt_size ?? null,

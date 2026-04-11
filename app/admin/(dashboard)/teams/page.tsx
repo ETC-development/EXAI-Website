@@ -1,108 +1,98 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Search, Eye, Lock, Unlock, Users as UsersIcon, Filter } from "lucide-react";
+import { Search, Eye, Users as UsersIcon, Filter } from "lucide-react";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 
-// Mock data
-const mockTeams = [
-  {
-    id: "1",
-    name: "AI Wizards",
-    leader: "Ahmed Mansouri",
-    memberCount: 5,
-    maxMembers: 5,
-    status: "submitted",
-    reviewStatus: "accepted",
-    locked: false,
-  },
-  {
-    id: "2",
-    name: "Neural Nexus",
-    leader: "Sarah Chen",
-    memberCount: 4,
-    maxMembers: 5,
-    status: "submitted",
-    reviewStatus: "under-review",
-    locked: false,
-  },
-  {
-    id: "3",
-    name: "Data Dynamos",
-    leader: "Karim Belkacem",
-    memberCount: 3,
-    maxMembers: 5,
-    status: "pending",
-    reviewStatus: "pending",
-    locked: false,
-  },
-  {
-    id: "4",
-    name: "ML Masters",
-    leader: "Yasmine Kadri",
-    memberCount: 5,
-    maxMembers: 5,
-    status: "submitted",
-    reviewStatus: "accepted",
-    locked: true,
-  },
-  {
-    id: "5",
-    name: "Deep Learning Crew",
-    leader: "Mohamed Amine",
-    memberCount: 2,
-    maxMembers: 5,
-    status: "pending",
-    reviewStatus: "pending",
-    locked: false,
-  },
-  {
-    id: "6",
-    name: "Vision Quest",
-    leader: "Amira Benali",
-    memberCount: 5,
-    maxMembers: 5,
-    status: "submitted",
-    reviewStatus: "rejected",
-    locked: false,
-  },
-];
+type TeamRow = {
+  id: string;
+  name: string;
+  status: string;
+  is_submitted: boolean;
+  leader_name: string | null;
+  member_count: number;
+  max_members: number;
+  score: number | null;
+};
 
 type FilterType = "all" | "pending" | "submitted" | "accepted" | "rejected";
 
 export default function Teams() {
+  const [teams, setTeams] = useState<TeamRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
 
-  const filteredTeams = mockTeams.filter((team) => {
-    const matchesSearch = team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         team.leader.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = filter === "all" || team.reviewStatus === filter;
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setLoadError("");
+      const res = await fetch("/api/admin/teams?limit=200", { credentials: "include" });
+      const json = await res.json().catch(() => ({}));
+      if (cancelled) return;
+      if (!res.ok) {
+        setLoadError(json?.error ?? "Failed to load teams");
+        setTeams([]);
+      } else {
+        setTeams(json.teams ?? []);
+      }
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const filteredTeams = teams.filter((team) => {
+    const leader = team.leader_name ?? "";
+    const matchesSearch =
+      team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      leader.toLowerCase().includes(searchQuery.toLowerCase());
+    const submitted = team.is_submitted ? "submitted" : "pending";
+    const matchesFilter =
+      filter === "all" ||
+      (filter === "submitted" && submitted === "submitted") ||
+      (filter === "pending" && submitted === "pending") ||
+      team.status === filter;
     return matchesSearch && matchesFilter;
   });
 
   const getStatusBadge = (status: string) => {
-    const styles = {
+    const styles: Record<string, string> = {
       accepted: "bg-green-500/20 text-green-400 border-green-500/50",
       rejected: "bg-red-500/20 text-red-400 border-red-500/50",
-      "under-review": "bg-yellow-500/20 text-yellow-400 border-yellow-500/50",
       pending: "bg-slate-500/20 text-slate-400 border-slate-500/50",
     };
-    return styles[status as keyof typeof styles] || styles.pending;
+    return styles[status] ?? styles.pending;
   };
 
-  const getSubmissionBadge = (status: string) => {
-    return status === "submitted" 
-      ? "bg-[#14b4ba]/20 text-[#14b4ba] border-[#14b4ba]/50" 
+  const getSubmissionBadge = (isSubmitted: boolean) => {
+    return isSubmitted
+      ? "bg-[#14b4ba]/20 text-[#14b4ba] border-[#14b4ba]/50"
       : "bg-slate-600/20 text-slate-400 border-slate-600/50";
   };
 
+  if (loading) {
+    return (
+      <div className="text-slate-400 font-bold py-20 text-center">Loading teams…</div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-6 text-red-300 font-bold">
+        {loadError}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-black text-[#14b4ba] mb-2">Teams Management</h1>
@@ -114,7 +104,6 @@ export default function Teams() {
         </div>
       </div>
 
-      {/* Search and Filters */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -126,15 +115,17 @@ export default function Teams() {
             className="pl-10 bg-slate-800 border-slate-700 text-slate-100 focus:border-[#14b4ba]"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {(["all", "pending", "submitted", "accepted", "rejected"] as FilterType[]).map((f) => (
             <Button
               key={f}
+              type="button"
               onClick={() => setFilter(f)}
               variant={filter === f ? "default" : "outline"}
-              className={filter === f 
-                ? "bg-gradient-to-r from-[#14b4ba] to-[#079db5] text-white border-0" 
-                : "border-slate-700 text-slate-300 hover:bg-slate-800"
+              className={
+                filter === f
+                  ? "bg-gradient-to-r from-[#14b4ba] to-[#079db5] text-white border-0"
+                  : "border-slate-700 text-slate-300 hover:bg-slate-800"
               }
             >
               {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -143,7 +134,6 @@ export default function Teams() {
         </div>
       </div>
 
-      {/* Teams Table */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -167,7 +157,10 @@ export default function Teams() {
                   Submission
                 </th>
                 <th className="text-left px-6 py-4 text-sm font-black text-[#14b4ba] uppercase tracking-wider">
-                  Status
+                  Review
+                </th>
+                <th className="text-left px-6 py-4 text-sm font-black text-[#14b4ba] uppercase tracking-wider">
+                  Score
                 </th>
                 <th className="text-left px-6 py-4 text-sm font-black text-[#14b4ba] uppercase tracking-wider">
                   Actions
@@ -180,51 +173,45 @@ export default function Teams() {
                   key={team.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  transition={{ duration: 0.3, delay: index * 0.03 }}
                   className="border-b border-slate-800 hover:bg-slate-800/50 transition-colors"
                 >
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-100">{team.name}</span>
-                      {team.locked && <Lock className="w-4 h-4 text-yellow-500" />}
-                    </div>
+                    <span className="font-bold text-slate-100">{team.name}</span>
                   </td>
-                  <td className="px-6 py-4 text-slate-300">{team.leader}</td>
+                  <td className="px-6 py-4 text-slate-300">{team.leader_name ?? "—"}</td>
                   <td className="px-6 py-4">
-                    <span className={`font-bold ${
-                      team.memberCount === team.maxMembers ? 'text-[#14b4ba]' : 'text-slate-400'
-                    }`}>
-                      {team.memberCount}/{team.maxMembers}
+                    <span
+                      className={`font-bold ${
+                        team.member_count >= team.max_members ? "text-[#14b4ba]" : "text-slate-400"
+                      }`}
+                    >
+                      {team.member_count}/{team.max_members}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getSubmissionBadge(team.status)}`}>
-                      {team.status === "submitted" ? "Submitted" : "Pending"}
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-bold border ${getSubmissionBadge(team.is_submitted)}`}
+                    >
+                      {team.is_submitted ? "Submitted" : "Open"}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getStatusBadge(team.reviewStatus)}`}>
-                      {team.reviewStatus === "under-review" ? "Under Review" : team.reviewStatus.charAt(0).toUpperCase() + team.reviewStatus.slice(1)}
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-bold border ${getStatusBadge(team.status)}`}
+                    >
+                      {team.status.charAt(0).toUpperCase() + team.status.slice(1)}
                     </span>
                   </td>
+                  <td className="px-6 py-4 text-slate-300">
+                    {team.score != null ? `${team.score}` : "—"}
+                  </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <Link href={`/admin/teams/${team.id}`}>
-                        <Button 
-                          size="sm" 
-                          className="bg-[#14b4ba] hover:bg-[#0f8f94] text-white border-0"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                      </Link>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                      >
-                        {team.locked ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                    <Link href={`/admin/teams/${team.id}`}>
+                      <Button size="sm" className="bg-[#14b4ba] hover:bg-[#0f8f94] text-white border-0">
+                        <Eye className="w-4 h-4" />
                       </Button>
-                    </div>
+                    </Link>
                   </td>
                 </motion.tr>
               ))}
@@ -233,7 +220,6 @@ export default function Teams() {
         </div>
       </motion.div>
 
-      {/* Empty State */}
       {filteredTeams.length === 0 && (
         <div className="text-center py-12">
           <Filter className="w-12 h-12 text-slate-600 mx-auto mb-4" />

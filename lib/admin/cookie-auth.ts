@@ -33,12 +33,16 @@ function sign(payloadB64url: string, secret: string): string {
   return b64urlEncode(crypto.createHmac("sha256", secret).update(payloadB64url).digest());
 }
 
+export function normalizeAdminUsername(username: string): string {
+  return username.trim().toLowerCase();
+}
+
 export function buildAdminCookie(username: string, role: AdminRole) {
   const secret = getAdminCookieSecret();
   if (!secret) return null;
 
   const exp = Date.now() + 24 * 60 * 60 * 1000; // 24h
-  const payload: AdminCookiePayload = { username, role, exp };
+  const payload: AdminCookiePayload = { username: normalizeAdminUsername(username), role, exp };
   const payloadB64url = b64urlEncode(JSON.stringify(payload));
   const signature = sign(payloadB64url, secret);
 
@@ -63,6 +67,11 @@ export function parseAdminCookie(request: Request): AdminCookiePayload | null {
   }
 
   const raw = cookieMap.get(COOKIE_NAME);
+  return parseAdminCookieToken(raw, secret);
+}
+
+/** Parse signed admin cookie value (used by server layouts and tests). */
+export function parseAdminCookieToken(raw: string | null | undefined, secret: string): AdminCookiePayload | null {
   if (!raw) return null;
 
   const [payloadB64url, signature] = raw.split(".");
@@ -99,7 +108,8 @@ export function parseAdminCookie(request: Request): AdminCookiePayload | null {
 
 export function verifyAdminCredentials(username: string, password: string): AdminRole | null {
   const creds = getAdminCredentials();
-  const match = creds.find((c) => c.username === username && c.password === password);
+  const u = normalizeAdminUsername(username);
+  const match = creds.find((c) => normalizeAdminUsername(c.username) === u && c.password === password);
   return match?.role ?? null;
 }
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { Lock, Mail } from "lucide-react";
+import { Lock, User } from "lucide-react";
 import { ExaiFullLogo } from "@/app/components/ExaiLogo";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -11,7 +11,7 @@ import { Label } from "@/app/components/ui/label";
 
 export default function AdminLogin() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -23,11 +23,18 @@ export default function AdminLogin() {
     const res = await fetch("/api/admin/login", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ username: email, password }),
+      body: JSON.stringify({ username, password }),
     });
     setLoading(false);
     if (res.ok) {
       router.push("/admin");
+      return;
+    }
+    const data = await res.json().catch(() => ({}));
+    if (data?.error === "ADMIN_NOT_PROVISIONED") {
+      setError("Account not provisioned: add this login to admin_users in the database.");
+    } else if (data?.error === "SERVER_MISCONFIGURED") {
+      setError("Server misconfiguration (check ADMIN_COOKIE_SECRET).");
     } else {
       setError("Invalid credentials");
     }
@@ -64,18 +71,20 @@ export default function AdminLogin() {
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <Label htmlFor="email" className="text-slate-300 mb-2 block font-bold">
-                Email
+              <Label htmlFor="admin-username" className="text-slate-300 mb-2 block font-bold">
+                Username or email
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="admin-username"
+                  type="text"
+                  name="username"
+                  autoComplete="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="pl-10 bg-slate-800 border-slate-700 text-slate-100 focus:border-[#14b4ba]"
-                  placeholder="admin@exai.dz"
+                  placeholder="username or email"
                   required
                 />
               </div>
