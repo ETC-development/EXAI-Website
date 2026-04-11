@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { ArrowLeft, Award } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { ScoringRubricDialog } from "@/app/admin/components/ScoringRubricDialog";
 import { Slider } from "@/app/components/ui/slider";
 import { Textarea } from "@/app/components/ui/textarea";
 import { Label } from "@/app/components/ui/label";
@@ -80,16 +81,22 @@ export default function EvaluationPage() {
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
-      <div>
-        <Link
-          href={`/admin/teams/${teamId}`}
-          className="inline-flex items-center gap-2 text-[#14b4ba] hover:text-[#0f8f94] mb-4 font-bold"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to team
-        </Link>
-        <h1 className="text-4xl font-black text-[#14b4ba] mb-2">Score: {teamName}</h1>
-        <p className="text-slate-400">Single score 0–100 (stored in team_scores)</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <Link
+            href={`/admin/teams/${teamId}`}
+            className="inline-flex items-center gap-2 text-[#14b4ba] hover:text-[#0f8f94] mb-4 font-bold transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to team
+          </Link>
+          <h1 className="text-4xl font-black text-[#14b4ba] mb-2">Score: {teamName}</h1>
+          <p className="text-slate-400 max-w-xl">
+            Enter one overall score (0–100) aligned with the EXAI rubric. It is saved to{" "}
+            <span className="font-mono text-slate-300">team_scores</span> (latest save wins).
+          </p>
+        </div>
+        <ScoringRubricDialog />
       </div>
 
       {error && (
@@ -125,7 +132,9 @@ export default function EvaluationPage() {
           </div>
         </div>
         <div className="space-y-2">
-          <Label className="text-slate-300">Note (optional)</Label>
+          <Label className="text-slate-300">
+            Note (optional) — free text; rubric criteria A–E are not stored as separate fields
+          </Label>
           <Textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}

@@ -15,6 +15,7 @@ import {
   Phone,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { ScoringRubricDialog } from "@/app/admin/components/ScoringRubricDialog";
 import { useCallback, useEffect, useState } from "react";
 import { formatYearOfStudy } from "@/lib/year-label";
 
@@ -276,17 +277,20 @@ export default function TeamDetailsPage() {
         </motion.div>
       )}
 
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Link href="/admin/teams">
           <Button type="button" variant="adminMuted">
             Back
           </Button>
         </Link>
-        <Link href={`/admin/evaluation/${teamId}`}>
-          <Button type="button" variant="adminPrimary">
-            Score team
-          </Button>
-        </Link>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <ScoringRubricDialog />
+          <Link href={`/admin/evaluation/${teamId}`}>
+            <Button type="button" variant="adminPrimary">
+              Score team
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );
