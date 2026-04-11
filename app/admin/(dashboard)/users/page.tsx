@@ -5,6 +5,8 @@ import { motion } from "motion/react";
 import { Search, UserCog, Mail, School, Calendar, Users as UsersIcon } from "lucide-react";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
+import { PaginationBar } from "@/app/components/PaginationBar";
+import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { formatYearOfStudy } from "@/lib/year-label";
 
 type UserRow = {
@@ -19,43 +21,80 @@ type UserRow = {
 
 type FilterType = "all" | "in-team" | "unassigned";
 
+const PAGE_SIZE = 25;
+
 export default function Users() {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedQ = useDebouncedValue(searchQuery, 400);
   const [filter, setFilter] = useState<FilterType>("all");
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [stats, setStats] = useState({ total: 0, inTeam: 0, unassigned: 0 });
 
   useEffect(() => {
     let c = false;
     (async () => {
-      setLoading(true);
-      const res = await fetch("/api/admin/users?limit=500", { credentials: "include" });
+      const res = await fetch("/api/admin/users/stats", { credentials: "include" });
       const json = await res.json().catch(() => ({}));
-      if (c) return;
-      if (!res.ok) setLoadError(json?.error ?? "Failed to load");
-      else setUsers(json.users ?? []);
-      setLoading(false);
+      if (c || !res.ok) return;
+      setStats({
+        total: json.total ?? 0,
+        inTeam: json.in_team ?? 0,
+        unassigned: json.unassigned ?? 0,
+      });
     })();
     return () => {
       c = true;
     };
   }, []);
 
-  const filteredUsers = users.filter((user) => {
-    const matchesSearch =
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.school.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = filter === "all" || user.team_status === filter;
-    return matchesSearch && matchesFilter;
-  });
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedQ, filter]);
 
-  const stats = {
-    total: users.length,
-    inTeam: users.filter((u) => u.team_status === "in-team").length,
-    unassigned: users.filter((u) => u.team_status === "unassigned").length,
-  };
+  useEffect(() => {
+    const ac = new AbortController();
+    (async () => {
+      setLoading(true);
+      setLoadError("");
+      const params = new URLSearchParams({
+        limit: String(PAGE_SIZE),
+        page: String(page),
+        filter,
+      });
+      const t = debouncedQ.trim();
+      if (t) params.set("q", t);
+      try {
+        const res = await fetch(`/api/admin/users?${params.toString()}`, {
+          credentials: "include",
+          signal: ac.signal,
+        });
+        const json = await res.json().catch(() => ({}));
+        if (ac.signal.aborted) return;
+        if (!res.ok) {
+          setLoadError(json?.error ?? "Failed to load");
+          setUsers([]);
+          setTotal(0);
+          setTotalPages(1);
+        } else {
+          setUsers(json.users ?? []);
+          setTotal(typeof json.total === "number" ? json.total : 0);
+          setTotalPages(typeof json.totalPages === "number" ? json.totalPages : 1);
+        }
+      } catch (e) {
+        if (e instanceof DOMException && e.name === "AbortError") return;
+        setLoadError("Failed to load");
+        setUsers([]);
+      } finally {
+        if (!ac.signal.aborted) setLoading(false);
+      }
+    })();
+    return () => ac.abort();
+  }, [page, debouncedQ, filter]);
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
@@ -65,11 +104,11 @@ export default function Users() {
     return styles[status] ?? styles.unassigned;
   };
 
-  if (loading) {
+  if (loading && users.length === 0 && !loadError) {
     return <div className="text-slate-400 font-bold py-20">Loading participants…</div>;
   }
 
-  if (loadError) {
+  if (loadError && users.length === 0) {
     return (
       <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-6 text-red-300 font-bold">
         {loadError}
@@ -82,11 +121,13 @@ export default function Users() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-black text-[#14b4ba] mb-2">Participants</h1>
-          <p className="text-slate-400">Registered users (from Supabase)</p>
+          <p className="text-slate-400">Registered users</p>
         </div>
         <div className="flex items-center gap-2 text-slate-400">
           <UserCog className="w-5 h-5" />
-          <span className="font-bold">{filteredUsers.length} shown</span>
+          <span className="font-bold">
+            {total} matching{filter !== "all" || debouncedQ.trim() ? " (filtered)" : ""}
+          </span>
         </div>
       </div>
 
@@ -110,7 +151,7 @@ export default function Users() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
           <Input
             type="text"
-            placeholder="Search by name, email, or school..."
+            placeholder="Search name, email, or school…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 bg-slate-800 border-slate-700 text-slate-100 focus:border-[#14b4ba]"
@@ -121,7 +162,10 @@ export default function Users() {
             <Button
               key={f}
               type="button"
-              onClick={() => setFilter(f)}
+              onClick={() => {
+                setFilter(f);
+                setPage(1);
+              }}
               variant={filter === f ? "adminPrimary" : "adminMuted"}
             >
               {f === "all" ? "All" : f === "in-team" ? "In team" : "No team"}
@@ -129,6 +173,15 @@ export default function Users() {
           ))}
         </div>
       </div>
+
+      <PaginationBar
+        page={page}
+        totalPages={totalPages}
+        totalItems={total}
+        pageSize={PAGE_SIZE}
+        onPageChange={setPage}
+        disabled={loading}
+      />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -161,12 +214,12 @@ export default function Users() {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user, index) => (
+              {users.map((user, index) => (
                 <motion.tr
                   key={user.id}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.03 }}
+                  transition={{ duration: 0.2, delay: Math.min(index * 0.02, 0.3) }}
                   className="border-b border-slate-800 hover:bg-slate-800/50 transition-colors"
                 >
                   <td className="px-6 py-4">
@@ -216,10 +269,10 @@ export default function Users() {
         </div>
       </motion.div>
 
-      {filteredUsers.length === 0 && (
+      {users.length === 0 && !loading && (
         <div className="text-center py-12">
           <UserCog className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-          <p className="text-slate-400">No participants match</p>
+          <p className="text-slate-400">No participants on this page</p>
         </div>
       )}
     </div>

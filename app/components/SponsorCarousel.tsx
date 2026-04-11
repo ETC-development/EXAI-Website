@@ -44,6 +44,8 @@ export function SponsorCarousel() {
               <img
                 src={sponsor.logo}
                 alt={sponsor.name}
+                loading="lazy"
+                decoding="async"
                 className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-60 group-hover:opacity-100 transition-opacity duration-300"
                 onError={(e) => {
                   // Fallback to text if image fails to load

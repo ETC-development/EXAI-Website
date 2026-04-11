@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "motion/react";
 import {
@@ -13,13 +14,25 @@ import {
 } from "lucide-react";
 import { CountdownTimer } from "@/app/components/CountdownTimer";
 import { ChallengeCard } from "@/app/components/ChallengeCard";
-import { MentorCarousel } from "@/app/components/MentorCarousel";
-import { MultiDayAgenda } from "@/app/components/MultiDayAgenda";
-import { SponsorCarousel } from "@/app/components/SponsorCarousel";
 import { Navbar } from "@/app/components/Navbar";
-import { Footer } from "@/app/components/Footer";
 import { ExaiXLogo } from "@/app/components/ExaiLogo";
 import { Button } from "@/app/components/ui/button";
+
+const LandingBelowFold = dynamic(
+  () =>
+    import("@/app/components/landing/LandingBelowFold").then((m) => ({
+      default: m.LandingBelowFold,
+    })),
+  {
+    loading: () => (
+      <div className="py-24 px-4 text-center text-slate-500 text-sm font-bold">Loading…</div>
+    ),
+  },
+);
+
+const Footer = dynamic(() =>
+  import("@/app/components/Footer").then((m) => ({ default: m.Footer })),
+);
 
 export default function LandingPage() {
   const eventDate = new Date("2026-05-07T09:00:00");
@@ -255,65 +268,7 @@ solving skills under realistic constraints.
         </div>
       </section>
 
-      {/* Mentors */}
-      <section id="mentors" className="relative py-24 px-4">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-5xl md:text-6xl font-black mb-6 text-[#14b4ba]">
-              Expert Mentors
-            </h2>
-            <p className="text-xl text-slate-300">Learn from industry leaders and AI pioneers</p>
-          </motion.div>
-
-          <MentorCarousel mentors={mentors} />
-        </div>
-      </section>
-
-      {/* Sponsors */}
-      <section className="relative py-24 px-4 bg-slate-900/30">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-5xl md:text-6xl font-black mb-6 text-[#14b4ba]">
-              Our Sponsors
-            </h2>
-            <p className="text-xl text-slate-300">Supported by leading tech companies</p>
-          </motion.div>
-
-          <SponsorCarousel />
-        </div>
-      </section>
-
-      {/* Agenda */}
-      <section id="agenda" className="relative py-24 px-4">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-5xl md:text-6xl font-black mb-6 text-[#14b4ba]">
-              3-Day Event Agenda
-            </h2>
-            <p className="text-xl text-slate-300">Three days of intense innovation and collaboration</p>
-          </motion.div>
-
-          <MultiDayAgenda />
-        </div>
-      </section>
+      <LandingBelowFold mentors={mentors} />
 
       {/* Final CTA */}
       <section className="relative py-32 px-4 bg-slate-900/30">

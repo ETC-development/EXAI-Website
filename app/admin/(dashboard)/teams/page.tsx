@@ -6,6 +6,8 @@ import { motion } from "motion/react";
 import { Search, Eye, Users as UsersIcon, Filter } from "lucide-react";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
+import { PaginationBar } from "@/app/components/PaginationBar";
+import { useDebouncedValue } from "@/lib/use-debounced-value";
 
 type TeamRow = {
   id: string;
@@ -20,47 +22,62 @@ type TeamRow = {
 
 type FilterType = "all" | "pending" | "submitted" | "accepted" | "rejected";
 
+const PAGE_SIZE = 25;
+
 export default function Teams() {
   const [teams, setTeams] = useState<TeamRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedQ = useDebouncedValue(searchQuery, 400);
   const [filter, setFilter] = useState<FilterType>("all");
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    let cancelled = false;
+    setPage(1);
+  }, [debouncedQ, filter]);
+
+  useEffect(() => {
+    const ac = new AbortController();
     (async () => {
       setLoading(true);
       setLoadError("");
-      const res = await fetch("/api/admin/teams?limit=200", { credentials: "include" });
-      const json = await res.json().catch(() => ({}));
-      if (cancelled) return;
-      if (!res.ok) {
-        setLoadError(json?.error ?? "Failed to load teams");
+      const params = new URLSearchParams({
+        limit: String(PAGE_SIZE),
+        page: String(page),
+        filter,
+      });
+      const t = debouncedQ.trim();
+      if (t) params.set("q", t);
+      try {
+        const res = await fetch(`/api/admin/teams?${params.toString()}`, {
+          credentials: "include",
+          signal: ac.signal,
+        });
+        const json = await res.json().catch(() => ({}));
+        if (ac.signal.aborted) return;
+        if (!res.ok) {
+          setLoadError(json?.error ?? "Failed to load teams");
+          setTeams([]);
+          setTotal(0);
+          setTotalPages(1);
+        } else {
+          setTeams(json.teams ?? []);
+          setTotal(typeof json.total === "number" ? json.total : 0);
+          setTotalPages(typeof json.totalPages === "number" ? json.totalPages : 1);
+        }
+      } catch (e) {
+        if (e instanceof DOMException && e.name === "AbortError") return;
+        setLoadError("Failed to load teams");
         setTeams([]);
-      } else {
-        setTeams(json.teams ?? []);
+      } finally {
+        if (!ac.signal.aborted) setLoading(false);
       }
-      setLoading(false);
     })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const filteredTeams = teams.filter((team) => {
-    const leader = team.leader_name ?? "";
-    const matchesSearch =
-      team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      leader.toLowerCase().includes(searchQuery.toLowerCase());
-    const submitted = team.is_submitted ? "submitted" : "pending";
-    const matchesFilter =
-      filter === "all" ||
-      (filter === "submitted" && submitted === "submitted") ||
-      (filter === "pending" && submitted === "pending") ||
-      team.status === filter;
-    return matchesSearch && matchesFilter;
-  });
+    return () => ac.abort();
+  }, [page, debouncedQ, filter]);
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
@@ -77,13 +94,13 @@ export default function Teams() {
       : "bg-slate-600/20 text-slate-400 border-slate-600/50";
   };
 
-  if (loading) {
+  if (loading && teams.length === 0 && !loadError) {
     return (
       <div className="text-slate-400 font-bold py-20 text-center">Loading teams…</div>
     );
   }
 
-  if (loadError) {
+  if (loadError && teams.length === 0) {
     return (
       <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-6 text-red-300 font-bold">
         {loadError}
@@ -96,11 +113,11 @@ export default function Teams() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-black text-[#14b4ba] mb-2">Teams Management</h1>
-          <p className="text-slate-400">Manage and review all registered teams</p>
+          <p className="text-slate-400">Manage and review registered teams</p>
         </div>
         <div className="flex items-center gap-2 text-slate-400">
           <UsersIcon className="w-5 h-5" />
-          <span className="font-bold">{filteredTeams.length} teams</span>
+          <span className="font-bold">{total} matching</span>
         </div>
       </div>
 
@@ -109,7 +126,7 @@ export default function Teams() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
           <Input
             type="text"
-            placeholder="Search teams or leaders..."
+            placeholder="Search team name…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 bg-slate-800 border-slate-700 text-slate-100 focus:border-[#14b4ba]"
@@ -120,7 +137,10 @@ export default function Teams() {
             <Button
               key={f}
               type="button"
-              onClick={() => setFilter(f)}
+              onClick={() => {
+                setFilter(f);
+                setPage(1);
+              }}
               variant={filter === f ? "adminPrimary" : "adminMuted"}
             >
               {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -128,6 +148,15 @@ export default function Teams() {
           ))}
         </div>
       </div>
+
+      <PaginationBar
+        page={page}
+        totalPages={totalPages}
+        totalItems={total}
+        pageSize={PAGE_SIZE}
+        onPageChange={setPage}
+        disabled={loading}
+      />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -163,12 +192,12 @@ export default function Teams() {
               </tr>
             </thead>
             <tbody>
-              {filteredTeams.map((team, index) => (
+              {teams.map((team, index) => (
                 <motion.tr
                   key={team.id}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.03 }}
+                  transition={{ duration: 0.2, delay: Math.min(index * 0.02, 0.3) }}
                   className="border-b border-slate-800 hover:bg-slate-800/50 transition-colors"
                 >
                   <td className="px-6 py-4">
@@ -215,10 +244,10 @@ export default function Teams() {
         </div>
       </motion.div>
 
-      {filteredTeams.length === 0 && (
+      {teams.length === 0 && !loading && (
         <div className="text-center py-12">
           <Filter className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-          <p className="text-slate-400">No teams found matching your criteria</p>
+          <p className="text-slate-400">No teams on this page — try another filter or search</p>
         </div>
       )}
     </div>

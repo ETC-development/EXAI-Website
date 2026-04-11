@@ -4,8 +4,14 @@ import { requireAdmin } from "@/lib/admin/require-admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const adminRoles = ["staff", "super_admin"] as const;
+
+const teamFilterSchema = z.enum(["all", "pending", "submitted", "accepted", "rejected"]);
+
 const teamsQuerySchema = z.object({
-  limit: z.coerce.number().int().min(1).max(200).default(50),
+  limit: z.coerce.number().int().min(1).max(100).default(25),
+  page: z.coerce.number().int().min(1).default(1),
+  filter: z.preprocess((v) => (v === "" || v == null ? "all" : v), teamFilterSchema).default("all"),
+  q: z.string().max(200).optional(),
 });
 
 export async function GET(request: Request) {
@@ -17,26 +23,67 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const parsed = teamsQuerySchema.safeParse({
     limit: url.searchParams.get("limit"),
+    page: url.searchParams.get("page"),
+    filter: url.searchParams.get("filter"),
+    q: url.searchParams.get("q") ?? undefined,
   });
 
-  const limit = parsed.success ? parsed.data.limit : 50;
+  const limit = parsed.success ? parsed.data.limit : 25;
+  const page = parsed.success ? parsed.data.page : 1;
+  const filter = parsed.success ? parsed.data.filter : "all";
+  const q = parsed.success ? parsed.data.q : undefined;
 
-  // Keep list endpoint lightweight.
   const supabase = createSupabaseServerClient();
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
 
-  const { data: teams, error: teamsError } = await supabase
+  let listQuery = supabase
     .from("teams")
-    .select("id,name,status,is_submitted,created_at,max_members")
-    .order("created_at", { ascending: false })
-    .limit(limit);
+    .select("id,name,status,is_submitted,created_at,max_members", { count: "exact" })
+    .order("created_at", { ascending: false });
+
+  const term = q?.trim();
+  if (term) {
+    listQuery = listQuery.ilike("name", `%${term}%`);
+  }
+  switch (filter) {
+    case "pending":
+      listQuery = listQuery.eq("is_submitted", false);
+      break;
+    case "submitted":
+      listQuery = listQuery.eq("is_submitted", true);
+      break;
+    case "accepted":
+      listQuery = listQuery.eq("status", "accepted");
+      break;
+    case "rejected":
+      listQuery = listQuery.eq("status", "rejected");
+      break;
+    default:
+      break;
+  }
+
+  const { data: teams, error: teamsError, count } = await listQuery.range(from, to);
 
   if (teamsError) {
     return NextResponse.json({ error: "INTERNAL_ERROR" }, { status: 500 });
   }
 
+  const total = count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+
   const teamIds = teams?.map((t) => t.id) ?? [];
   if (teamIds.length === 0) {
-    return NextResponse.json({ teams: [] }, { status: 200 });
+    return NextResponse.json(
+      {
+        teams: [],
+        total,
+        page,
+        limit,
+        totalPages,
+      },
+      { status: 200 },
+    );
   }
 
   const { data: leaderRows } = await supabase
@@ -82,8 +129,11 @@ export async function GET(request: Request) {
         member_count: memberCountByTeam.get(t.id) ?? 0,
         score: scoreByTeam.get(t.id) ?? null,
       })),
+      total,
+      page,
+      limit,
+      totalPages,
     },
     { status: 200 },
   );
 }
-

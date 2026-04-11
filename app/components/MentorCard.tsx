@@ -18,7 +18,7 @@ export function MentorCard({ name, role, company, image, github }: MentorCardPro
     >
       <div className="flex flex-col items-center text-center">
         <div className="w-24 h-24 rounded-full overflow-hidden mb-4 ring-2 ring-[#14b4ba]/30">
-          <img src={image} alt={name} className="w-full h-full object-cover" />
+          <img src={image} alt={name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
         </div>
         <h3 className="text-xl text-slate-100 mb-1 font-bold">{name}</h3>
         <p className="text-sm text-[#14b4ba] mb-1 font-bold">{role}</p>
