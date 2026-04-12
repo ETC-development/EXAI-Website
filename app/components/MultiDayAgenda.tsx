@@ -1,7 +1,9 @@
+"use client";
+
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { TimelineEvent } from "./TimelineEvent";
+import { TimelineEvent, type AgendaEventDetails } from "./TimelineEvent";
 import { Button } from "./ui/button";
 
 interface AgendaDay {
@@ -11,6 +13,7 @@ interface AgendaDay {
     time: string;
     title: string;
     description: string;
+    details?: AgendaEventDetails;
   }>;
 }
 
@@ -21,7 +24,28 @@ const agendaDays: AgendaDay[] = [
     events: [
       { time: "16:00 - 16:30", title: "Check-in", description: "Participant arrival and check-in process." },
       { time: "16:30 - 17:00", title: "Opening ceremony", description: "Official opening and event briefing." },
-      { time: "17:00 - 19:00", title: "Talk by Prof. Belhouari", description: "Main keynote session." },
+      {
+        time: "17:00 - 19:00",
+        title: "Talk by Prof. Belhouari",
+        description: "Main keynote session.",
+        details: {
+          sections: [
+            {
+              heading: "About the Presenter",
+              paragraphs: [
+                "Prof. Belhouari is an accomplished academic whose research sits at the intersection of mathematics, machine learning, and applied artificial intelligence. His work explores how rigorous mathematical frameworks underpin and advance modern AI systems, with applications spanning engineering, science, and industry.",
+              ],
+            },
+            {
+              heading: "Talk Summary",
+              paragraphs: [
+                "This talk examines the foundational role of mathematics in the development and deployment of AI. Prof. Belhouari will guide the audience through key mathematical concepts — from linear algebra and probability theory to optimization — demonstrating how each directly enables breakthroughs in machine learning and AI-driven problem solving.",
+                "Attendees will leave with a clearer picture of why mathematical literacy is essential for anyone working in or entering the field of AI, and how these principles are applied to address challenges in the real world.",
+              ],
+            },
+          ],
+        },
+      },
       { time: "19:00 - 20:00", title: "Start working", description: "Teams begin implementation." },
       { time: "20:00 - 21:00", title: "Dinner service", description: "Dinner break for participants." },
       { time: "21:00 - 08:00", title: "Deep Work Session", description: "Overnight focused work block." },

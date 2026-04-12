@@ -10,7 +10,7 @@ const defaultDescription =
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "EXAI — AI Datathon | ENSIA Tech Community",
+    default: "EXAI - ETC Datathon",
     template: "%s | EXAI",
   },
   description: defaultDescription,

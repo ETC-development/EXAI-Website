@@ -7,7 +7,7 @@ const homeDescription =
 
 export const metadata: Metadata = {
   title: {
-    absolute: "EXAI — AI Datathon | ENSIA Tech Community",
+    absolute: "EXAI - ETC Datathon",
   },
   description: homeDescription,
   openGraph: {
