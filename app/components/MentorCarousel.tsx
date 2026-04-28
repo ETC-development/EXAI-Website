@@ -8,7 +8,7 @@ interface Mentor {
   role: string;
   company: string;
   image: string;
-  github?: string;
+  linkedin?: string;
 }
 
 interface MentorCarouselProps {
@@ -92,7 +92,7 @@ export function MentorCarousel({ mentors, visibleCount = 4 }: MentorCarouselProp
                 role={mentor.role}
                 company={mentor.company}
                 image={mentor.image}
-                github={mentor.github}
+                linkedin={mentor.linkedin}
               />
             </motion.div>
           ))}

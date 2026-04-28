@@ -10,7 +10,7 @@ type Mentor = {
   role: string;
   company: string;
   image: string;
-  github?: string;
+  linkedin?: string;
 };
 
 export function LandingBelowFold({ mentors }: { mentors: Mentor[] }) {
@@ -26,7 +26,7 @@ export function LandingBelowFold({ mentors }: { mentors: Mentor[] }) {
             className="text-center mb-16"
           >
             <h2 className="text-5xl md:text-6xl font-black mb-6 text-[#14b4ba]">Expert Mentors</h2>
-            <p className="text-xl text-slate-300">Learn from industry leaders and AI pioneers</p>
+            <p className="text-xl text-slate-300">Learn and succeed with experienced mentors by your side</p>
           </motion.div>
 
           <MentorCarousel mentors={mentors} />

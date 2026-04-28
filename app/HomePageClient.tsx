@@ -17,6 +17,7 @@ import { ChallengeCard } from "@/app/components/ChallengeCard";
 import { Navbar } from "@/app/components/Navbar";
 import { ExaiXLogo } from "@/app/components/ExaiLogo";
 import { Button } from "@/app/components/ui/button";
+import mentorsData from "@/lib/mentors.json";
 
 const LandingBelowFold = dynamic(
   () =>
@@ -55,16 +56,13 @@ export default function HomePageClient() {
     },
   ];
 
-  const mentors = [
-    { name: "Yassir", role: "AI Research Lead", company: "DeepMind", image: "", github: "https://github.com/yassircherdouh" },
-    { name: "Yassir", role: "ML Engineer", company: "Google", image: "", github: "https://github.com/" },
-    { name: "Yassir", role: "Data Scientist", company: "Meta", image: "", github: "https://github.com/" },
-    { name: "Yassir", role: "NLP Specialist", company: "OpenAI", image: "", github: "https://github.com/" },
-    { name: "Yassir", role: "Computer Vision Expert", company: "Tesla", image: "", github: "https://github.com/" },
-    { name: "Yassir", role: "Deep Learning Researcher", company: "Microsoft", image: "", github: "https://github.com/" },
-    { name: "Yassir", role: "MLOps Engineer", company: "Amazon", image: "", github: "https://github.com/" },
-    { name: "Yassir", role: "Data Engineer", company: "Netflix", image: "", github: "https://github.com/" },
-  ];
+  const mentors = mentorsData.map((mentor) => ({
+    name: mentor.name,
+    role: mentor.role?.trim() || "Mentor",
+    company: mentor.challenge?.trim() || "Challenge",
+    image: mentor.picture?.trim() || "",
+    linkedin: mentor.linkedin?.trim() || undefined,
+  }));
 
   return (
     <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
