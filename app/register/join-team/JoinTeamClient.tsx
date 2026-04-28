@@ -9,6 +9,7 @@ import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
+import { SCHOOLS } from "@/lib/schools";
 
 const yearToApi: Record<string, string> = {
   L1: "1",
@@ -43,14 +44,8 @@ export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const schools = [
-    "ENSIA",
-    "ESI",
-    "USTHB",
-    "University of Algiers 1",
-    "University of Constantine",
-    "Other"
-  ];
+  const schools = SCHOOLS;
+
 
   const years = ["L1", "L2", "L3", "M1", "M2"];
   const tshirtSizes = ["XS", "S", "M", "L", "XL", "XXL"] as const;

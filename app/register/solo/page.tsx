@@ -9,6 +9,7 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
 import { ExaiFullLogo } from "@/app/components/ExaiLogo";
+import { SCHOOLS } from "@/lib/schools";
 
 const btnPrimary =
   "flex-1 bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white py-6 font-bold border-0 shadow-lg shadow-[#14b4ba]/25 hover:shadow-[#14b4ba]/45 hover:scale-[1.02] transition-all duration-300 disabled:opacity-60 disabled:hover:scale-100";
@@ -29,14 +30,8 @@ export default function SoloRegistration() {
     linkedin: "",
   });
 
-  const schools = [
-    "ENSIA",
-    "ESI",
-    "USTHB",
-    "University of Algiers 1",
-    "University of Constantine",
-    "Other"
-  ];
+  const schools = SCHOOLS;
+
 
   const years = ["L1", "L2", "L3", "M1", "M2"];
   const tshirtSizes = ["XS", "S", "M", "L", "XL", "XXL"] as const;

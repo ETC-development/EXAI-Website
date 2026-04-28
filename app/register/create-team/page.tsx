@@ -11,6 +11,7 @@ import { Label } from "@/app/components/ui/label";
 import { Textarea } from "@/app/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
 import { ExaiFullLogo } from "@/app/components/ExaiLogo";
+import { SCHOOLS } from "@/lib/schools";
 
 const yearToApi: Record<string, string> = {
   L1: "1",
@@ -48,14 +49,8 @@ export default function CreateTeamPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const schools = [
-    "ENSIA",
-    "ESI",
-    "USTHB",
-    "University of Algiers 1",
-    "University of Constantine",
-    "Other",
-  ];
+  const schools = SCHOOLS;
+
 
   const years = ["L1", "L2", "L3", "M1", "M2"];
   const tshirtSizes = ["XS", "S", "M", "L", "XL", "XXL"] as const;
