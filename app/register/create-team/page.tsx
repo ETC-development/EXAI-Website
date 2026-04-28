@@ -95,11 +95,20 @@ export default function CreateTeamPage() {
     const json = await res.json().catch(() => ({}));
     setLoading(false);
     if (!res.ok) {
-      setError(
-        typeof json?.error === "string"
-          ? json.error
-          : "Failed to create team. Check all fields.",
-      );
+      const apiError = typeof json?.error === "string" ? json.error : "";
+      if (apiError === "USER_ALREADY_IN_TEAM") {
+        setError("This email is already registered in a team.");
+      } else if (apiError === "TEAM_NAME_TAKEN" || apiError === "TEAM_OR_USER_ALREADY_EXISTS") {
+        setError("Team name or leader account already exists. Try a different team name.");
+      } else if (apiError === "DATABASE_SCHEMA_OUT_OF_DATE") {
+        setError("Registration backend is not fully migrated yet. Please contact organizers.");
+      } else if (apiError === "RATE_LIMITED") {
+        setError("Too many attempts. Please wait a minute and try again.");
+      } else if (apiError === "INVALID_PAYLOAD") {
+        setError("Please verify all required fields and try again.");
+      } else {
+        setError("Failed to create team. Please try again.");
+      }
       return;
     }
     const link = `${window.location.origin}/register/join-team/${json.invite_token}`;
@@ -250,15 +259,15 @@ export default function CreateTeamPage() {
               </div>
             )}
             <div className="flex gap-4 pt-2">
-              <Button type="button" onClick={goNext} className={btnPrimary}>
-                Next
-                <ChevronRight className="ml-2 w-5 h-5" />
-              </Button>
               <Link href="/register" className="flex-1">
                 <Button type="button" className={btnOutline}>
                   Cancel
                 </Button>
               </Link>
+              <Button type="button" onClick={goNext} className={btnPrimary}>
+                Continue
+                <ChevronRight className="ml-2 w-5 h-5" />
+              </Button>
             </div>
           </div>
         ) : (

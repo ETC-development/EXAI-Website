@@ -63,13 +63,39 @@ export async function POST(request: Request) {
 
   if (error) {
     const msg = error.message || "";
+    const code = (error as { code?: string }).code;
     if (msg.includes("USER_ALREADY_IN_TEAM")) {
       return NextResponse.json({ error: "USER_ALREADY_IN_TEAM" }, { status: 409 });
+    }
+    if (msg.includes("TEAM_ALREADY_EXISTS") || msg.includes("TEAM_NAME_TAKEN")) {
+      return NextResponse.json({ error: "TEAM_NAME_TAKEN" }, { status: 409 });
+    }
+    if (msg.includes("TEAM_NOT_JOINABLE") || msg.includes("TEAM_FULL")) {
+      return NextResponse.json({ error: "TEAM_NOT_JOINABLE" }, { status: 409 });
+    }
+    if (
+      code === "23505" ||
+      msg.includes("duplicate key") ||
+      msg.includes("unique constraint") ||
+      msg.includes("already exists")
+    ) {
+      // Catch DB uniqueness collisions even if RPC message differs across environments.
+      return NextResponse.json({ error: "TEAM_OR_USER_ALREADY_EXISTS" }, { status: 409 });
     }
     if (msg.includes("phone") && msg.includes("does not exist")) {
       console.error("[create-team] DB schema missing users.phone — apply migration 0006_users_phone.sql");
       return NextResponse.json(
         { error: "DATABASE_SCHEMA_OUT_OF_DATE", hint: "Apply Supabase migrations through 0006 (phone + RPC)." },
+        { status: 503 },
+      );
+    }
+    if (msg.includes("gen_random_bytes") || (code === "42883" && msg.includes("function"))) {
+      console.error("[create-team] DB missing pgcrypto/gen_random_bytes:", msg);
+      return NextResponse.json(
+        {
+          error: "DATABASE_SCHEMA_OUT_OF_DATE",
+          hint: "Enable pgcrypto and re-apply DB functions/migrations (create_team_with_leader uses gen_random_bytes).",
+        },
         { status: 503 },
       );
     }
@@ -80,7 +106,7 @@ export async function POST(request: Request) {
         { status: 503 },
       );
     }
-    console.error("[create-team] RPC error:", msg);
+    console.error("[create-team] RPC error:", code, msg);
     return NextResponse.json(
       { error: "INTERNAL_ERROR", ...(process.env.NODE_ENV !== "production" ? { details: msg } : {}) },
       { status: 500 },
