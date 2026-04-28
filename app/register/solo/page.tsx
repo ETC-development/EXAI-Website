@@ -19,6 +19,8 @@ const btnOutline =
 
 export default function SoloRegistration() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -35,10 +37,47 @@ export default function SoloRegistration() {
 
   const years = ["L1", "L2", "L3", "M1", "M2"];
   const tshirtSizes = ["XS", "S", "M", "L", "XL", "XXL"] as const;
+  const yearToApi: Record<string, string> = {
+    L1: "1",
+    L2: "2",
+    L3: "3",
+    M1: "master",
+    M2: "master",
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setError("");
+    setLoading(true);
+
+    const res = await fetch("/api/register-solo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.fullName,
+        email: formData.email,
+        school: formData.school,
+        year_of_study: yearToApi[formData.year] ?? "other",
+        phone: formData.phone,
+        github: formData.github.trim() || undefined,
+        linkedin: formData.linkedin.trim() || undefined,
+        tshirt_size: formData.tshirt,
+      }),
+    });
+
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      if (json.error === "USER_ALREADY_IN_TEAM") {
+        setError("This email is already registered in a team.");
+      } else if (json.error === "DATABASE_SCHEMA_OUT_OF_DATE") {
+        setError("Registration backend is not ready yet. Please contact the organizers.");
+      } else {
+        setError("Registration failed. Please try again in a moment.");
+      }
+      setLoading(false);
+      return;
+    }
+
     const soloCode = Math.random().toString(36).substring(2, 10).toUpperCase();
     const registrationData = {
       ...formData,
@@ -49,7 +88,11 @@ export default function SoloRegistration() {
       timestamp: new Date().toISOString(),
     };
     
-    localStorage.setItem(`solo_${soloCode}`, JSON.stringify(registrationData));
+    try {
+      localStorage.setItem(`solo_${soloCode}`, JSON.stringify(registrationData));
+    } catch {
+      // Non-blocking: server registration is already persisted.
+    }
     
     router.push(`/register/success?soloCode=${encodeURIComponent(soloCode)}&type=solo`);
   };
@@ -86,6 +129,11 @@ export default function SoloRegistration() {
         </motion.div>
 
         <form onSubmit={handleSubmit} className="bg-slate-900/80 backdrop-blur-sm border border-slate-700 rounded-xl p-8 space-y-6">
+          {error && (
+            <div className="rounded-lg border border-red-500/50 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+              {error}
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="fullName" className="text-slate-200">Full Name *</Label>
             <Input
@@ -201,8 +249,8 @@ export default function SoloRegistration() {
           </div>
 
           <div className="flex gap-4 pt-4">
-            <Button type="submit" className={btnPrimary}>
-              Register
+            <Button type="submit" className={btnPrimary} disabled={loading}>
+              {loading ? "Registering..." : "Register"}
             </Button>
             <Link href="/register" className="flex-1">
               <Button type="button" className={btnOutline}>
