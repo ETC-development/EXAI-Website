@@ -10,6 +10,7 @@ import { ScoringRubricDialog } from "@/app/admin/components/ScoringRubricDialog"
 import { Slider } from "@/app/components/ui/slider";
 import { Textarea } from "@/app/components/ui/textarea";
 import { Label } from "@/app/components/ui/label";
+import { withAdminCsrf } from "@/app/admin/csrf-client";
 
 export default function EvaluationPage() {
   const params = useParams();
@@ -46,7 +47,7 @@ export default function EvaluationPage() {
     setError("");
     const res = await fetch("/api/admin/score-team", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: withAdminCsrf({ "content-type": "application/json" }),
       credentials: "include",
       body: JSON.stringify({
         team_id: teamId,

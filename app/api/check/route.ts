@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabasePublicServerClient } from "@/lib/supabase/server";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
 const querySchema = z.object({
@@ -24,7 +24,7 @@ export async function GET(request: Request) {
   }
 
   const email = parsed.data.email.toLowerCase();
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabasePublicServerClient();
 
   const { data: user, error: userError } = await supabase
     .from("users")

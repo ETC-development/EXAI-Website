@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin/require-admin";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { enforceAdminCsrf } from "@/lib/security/csrf";
+import { createSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
 const adminRoles = ["staff", "super_admin"] as const;
 
@@ -11,6 +12,8 @@ const statusSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const csrf = enforceAdminCsrf(request);
+  if (csrf) return csrf;
   const authz = await requireAdmin(request, [...adminRoles]);
   if (!authz.ok) {
     return NextResponse.json({ error: authz.reason }, { status: authz.status });
@@ -25,7 +28,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseServiceRoleClient();
   const { team_id, status } = parsed.data;
 
   const { data, error } = await supabase

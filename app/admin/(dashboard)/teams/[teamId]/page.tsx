@@ -18,6 +18,7 @@ import { Button } from "@/app/components/ui/button";
 import { ScoringRubricDialog } from "@/app/admin/components/ScoringRubricDialog";
 import { useCallback, useEffect, useState } from "react";
 import { formatYearOfStudy } from "@/lib/year-label";
+import { withAdminCsrf } from "@/app/admin/csrf-client";
 
 type Member = {
   user_id: string;
@@ -79,7 +80,7 @@ export default function TeamDetailsPage() {
     setStatusBusy(true);
     const res = await fetch("/api/admin/set-status", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: withAdminCsrf({ "content-type": "application/json" }),
       credentials: "include",
       body: JSON.stringify({ team_id: teamId, status }),
     });

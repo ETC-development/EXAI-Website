@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
-function getClientKey(request: Request): string {
+export function getClientKey(request: Request): string {
   const header =
     request.headers.get("x-forwarded-for") ||
     request.headers.get("cf-connecting-ip") ||
@@ -16,13 +16,13 @@ function getClientKey(request: Request): string {
 export async function enforceRateLimit(
   request: Request,
   routeKey: string,
-  opts?: { maxRequests?: number; windowSeconds?: number },
+  opts?: { maxRequests?: number; windowSeconds?: number; clientKey?: string },
 ): Promise<NextResponse | null> {
   const maxRequests = opts?.maxRequests ?? 30; // per window
   const windowSeconds = opts?.windowSeconds ?? 600; // 10 minutes
 
-  const clientKey = getClientKey(request);
-  const supabase = createSupabaseServerClient();
+  const clientKey = opts?.clientKey ?? getClientKey(request);
+  const supabase = createSupabaseServiceRoleClient();
 
   try {
     const { data, error } = await supabase.rpc("consume_rate_limit", {

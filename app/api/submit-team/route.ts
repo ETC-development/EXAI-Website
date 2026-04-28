@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabasePublicServerClient } from "@/lib/supabase/server";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
 const submitTeamSchema = z.object({
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabasePublicServerClient();
   const input = parsed.data;
 
   const { data, error } = await supabase.rpc("submit_team_with_leader", {

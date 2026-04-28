@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceRoleClient } from "@/lib/supabase/server";
 import { COOKIE_NAME, normalizeAdminUsername, parseAdminCookieToken } from "@/lib/admin/cookie-auth";
 import { getAdminCookieSecret, type AdminRole } from "@/lib/admin/admin-config";
 
@@ -19,7 +19,7 @@ export async function getAdminDashboardSession(): Promise<AdminDashboardSession 
   if (!payload) return null;
 
   const username = normalizeAdminUsername(payload.username);
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseServiceRoleClient();
   const { data: adminUser, error } = await supabase
     .from("admin_users")
     .select("id,role,better_auth_user_id")

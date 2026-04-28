@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabasePublicServerClient } from "@/lib/supabase/server";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
 const yearOfStudyEnum = z.enum(["1", "2", "3", "4", "5", "master", "phd", "other"]);
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
   }
 
   const input = parsed.data;
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabasePublicServerClient();
 
   const { data: existingUser } = await supabase
     .from("users")

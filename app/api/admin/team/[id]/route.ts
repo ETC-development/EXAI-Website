@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/require-admin";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
 const adminRoles = ["staff", "super_admin"] as const;
 
@@ -14,7 +14,7 @@ export async function GET(
   }
 
   const teamId = (await params).id;
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseServiceRoleClient();
 
   const { data: team, error: teamError } = await supabase
     .from("teams")

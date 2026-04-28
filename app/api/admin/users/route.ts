@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin/require-admin";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceRoleClient } from "@/lib/supabase/server";
 
 const adminRoles = ["staff", "super_admin"] as const;
 
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
   const filter = parsed.success ? parsed.data.filter : "all";
   const q = parsed.success ? parsed.data.q : undefined;
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseServiceRoleClient();
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 

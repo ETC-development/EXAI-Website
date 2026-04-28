@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceRoleClient } from "@/lib/supabase/server";
 import { parseAdminCookie, normalizeAdminUsername, type AdminCookiePayload } from "@/lib/admin/cookie-auth";
 import type { AdminRole } from "@/lib/admin/admin-config";
 
@@ -14,7 +14,7 @@ export async function requireAdmin(request: Request, allowedRoles: AdminRole[]) 
   const payload = parseAdminCookie(request);
   if (!payload) return { ok: false as const, status: 401, reason: "UNAUTHORIZED" as const };
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseServiceRoleClient();
   const username = safeExtractUsername(payload);
 
   const { data: adminUser, error } = await supabase

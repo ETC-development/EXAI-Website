@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { ExaiFullLogo, ExaiXLogo } from "@/app/components/ExaiLogo";
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { withAdminCsrf } from "@/app/admin/csrf-client";
 
 function useIsMdUp() {
   return useSyncExternalStore(
@@ -65,7 +66,7 @@ export default function AdminDashboardShell({
   const showNavLabels = isMdUp ? sidebarExpanded : mobileDrawerOpen;
 
   async function handleLogout() {
-    await fetch("/api/admin/logout", { method: "POST" });
+    await fetch("/api/admin/logout", { method: "POST", headers: withAdminCsrf() });
     router.push("/admin/login");
     router.refresh();
   }
