@@ -1,5 +1,20 @@
-@import url('https://fonts.cdnfonts.com/css/nexa-bold');
+@font-face {
+  font-family: "Nexa";
+  src: url("/fonts/Nexa-ExtraLight.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
 
+@font-face {
+  font-family: "Nexa";
+  src: url("/fonts/Nexa-Heavy.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+html,
 body {
-  font-family: 'Nexa', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: "Nexa", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
