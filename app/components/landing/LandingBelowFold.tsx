@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { MentorCarousel } from "@/app/components/MentorCarousel";
-import { SponsorCarousel } from "@/app/components/SponsorCarousel";
+// import { SponsorCarousel } from "@/app/components/SponsorCarousel";
 import { MultiDayAgenda } from "@/app/components/MultiDayAgenda";
 
 type Mentor = {
@@ -33,7 +33,7 @@ export function LandingBelowFold({ mentors }: { mentors: Mentor[] }) {
         </div>
       </section>
 
-      <section className="relative py-24 px-4 bg-slate-900/30">
+      {/* <section className="relative py-24 px-4 bg-slate-900/30">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -48,7 +48,7 @@ export function LandingBelowFold({ mentors }: { mentors: Mentor[] }) {
 
           <SponsorCarousel />
         </div>
-      </section>
+      </section> */}
 
       <section id="agenda" className="relative py-24 px-4">
         <div className="max-w-4xl mx-auto">
