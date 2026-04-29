@@ -21,12 +21,6 @@ const yearToApi: Record<string, string> = {
   M2: "master",
 };
 
-const btnPrimary =
-  "flex-1 bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white py-6 font-bold border-0 shadow-lg shadow-[#14b4ba]/25 hover:shadow-[#14b4ba]/45 hover:scale-[1.02] transition-all duration-300 disabled:opacity-60 disabled:hover:scale-100";
-
-const btnOutline =
-  "w-full border-2 border-[#14b4ba] bg-transparent text-[#14b4ba] py-6 font-bold hover:bg-[#14b4ba] hover:text-white hover:shadow-lg hover:shadow-[#14b4ba]/25 hover:scale-[1.02] transition-all duration-300";
-
 export default function CreateTeamPage() {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
@@ -183,7 +177,9 @@ export default function CreateTeamPage() {
                 <Button
                   type="button"
                   onClick={copyInviteLink}
-                  className="bg-[#14b4ba] hover:bg-[#0f8f94] text-white shrink-0 shadow-md hover:scale-105 transition-all"
+                  variant="adminIcon"
+                  size="icon"
+                  className="shrink-0"
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
@@ -191,11 +187,11 @@ export default function CreateTeamPage() {
             </div>
 
             <div className="flex gap-4">
-              <Button type="button" onClick={handleCheckStatus} className={`flex-1 ${btnPrimary}`}>
+              <Button type="button" onClick={handleCheckStatus} variant="gradient" size="xl" className="flex-1">
                 Check My Status
               </Button>
               <Link href="/" className="flex-1">
-                <Button type="button" className={btnOutline}>
+                <Button type="button" variant="gradientOutline" size="xl" className="w-full">
                   Back to Home
                 </Button>
               </Link>
@@ -260,13 +256,13 @@ export default function CreateTeamPage() {
             )}
             <div className="flex gap-4 pt-2">
               <Link href="/register" className="flex-1">
-                <Button type="button" className={btnOutline}>
+                <Button type="button" variant="gradientOutline" size="xl" className="w-full">
                   Cancel
                 </Button>
               </Link>
-              <Button type="button" onClick={goNext} className={btnPrimary}>
+              <Button type="button" onClick={goNext} variant="gradient" size="xl" className="flex-1">
                 Continue
-                <ChevronRight className="ml-2 w-5 h-5" />
+                <ChevronRight className="w-5 h-5" />
               </Button>
             </div>
           </div>
@@ -451,11 +447,11 @@ export default function CreateTeamPage() {
             )}
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button type="button" onClick={goBack} className={`${btnOutline} sm:flex-1`}>
-                <ChevronLeft className="mr-2 w-5 h-5" />
+              <Button type="button" onClick={goBack} variant="gradientOutline" size="xl" className="sm:flex-1">
+                <ChevronLeft className="w-5 h-5" />
                 Back
               </Button>
-              <Button type="submit" disabled={loading} className={btnPrimary}>
+              <Button type="submit" disabled={loading} variant="gradient" size="xl" className="flex-1">
                 {loading ? "Creating..." : "Create team & get invite link"}
               </Button>
             </div>

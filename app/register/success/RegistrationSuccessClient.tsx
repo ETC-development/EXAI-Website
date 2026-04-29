@@ -12,12 +12,6 @@ type Props = {
   soloCode: string | null;
 };
 
-const btnPrimarySuccess =
-  "w-full bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white py-6 font-bold border-0 shadow-lg shadow-[#14b4ba]/25 hover:shadow-[#14b4ba]/45 hover:scale-[1.02] transition-all duration-300";
-
-const btnOutlineSuccess =
-  "w-full border-2 border-[#14b4ba] bg-transparent text-[#14b4ba] py-6 font-bold hover:bg-[#14b4ba] hover:text-white hover:shadow-lg hover:shadow-[#14b4ba]/25 hover:scale-[1.02] transition-all duration-300";
-
 export default function RegistrationSuccessClient({ type, inviteCode, soloCode }: Props) {
   const [registrationData, setRegistrationData] = useState<any>(null);
 
@@ -215,11 +209,11 @@ export default function RegistrationSuccessClient({ type, inviteCode, soloCode }
             className="flex gap-4"
           >
             <Link href="/" className="flex-1">
-              <Button className={btnPrimarySuccess}>Back to Home</Button>
+              <Button variant="gradient" size="xl" className="w-full">Back to Home</Button>
             </Link>
             {type === "team-leader" && (
               <Link href={`/register/join-team/${inviteCode}`} className="flex-1">
-                <Button type="button" className={btnOutlineSuccess}>
+                <Button type="button" variant="gradientOutline" size="xl" className="w-full">
                   View Invite Link
                 </Button>
               </Link>

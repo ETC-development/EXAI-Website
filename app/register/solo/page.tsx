@@ -11,12 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ExaiFullLogo } from "@/app/components/ExaiLogo";
 import { SCHOOLS } from "@/lib/schools";
 
-const btnPrimary =
-  "flex-1 bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white py-6 font-bold border-0 shadow-lg shadow-[#14b4ba]/25 hover:shadow-[#14b4ba]/45 hover:scale-[1.02] transition-all duration-300 disabled:opacity-60 disabled:hover:scale-100";
-
-const btnOutline =
-  "w-full border-2 border-[#14b4ba] bg-transparent text-[#14b4ba] py-6 font-bold hover:bg-[#14b4ba] hover:text-white hover:shadow-lg hover:shadow-[#14b4ba]/25 hover:scale-[1.02] transition-all duration-300";
-
 export default function SoloRegistration() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -249,11 +243,11 @@ export default function SoloRegistration() {
           </div>
 
           <div className="flex gap-4 pt-4">
-            <Button type="submit" className={btnPrimary} disabled={loading}>
+            <Button type="submit" variant="gradient" size="xl" className="flex-1" disabled={loading}>
               {loading ? "Registering..." : "Register"}
             </Button>
             <Link href="/register" className="flex-1">
-              <Button type="button" className={btnOutline}>
+              <Button type="button" variant="gradientOutline" size="xl" className="w-full">
                 Cancel
               </Button>
             </Link>

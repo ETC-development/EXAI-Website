@@ -19,12 +19,6 @@ const yearToApi: Record<string, string> = {
   M2: "master",
 };
 
-const btnPrimaryJoin =
-  "flex-1 bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white py-6 font-bold border-0 shadow-lg shadow-[#14b4ba]/25 hover:shadow-[#14b4ba]/45 hover:scale-[1.02] transition-all duration-300 disabled:opacity-60 disabled:hover:scale-100";
-
-const btnOutlineJoin =
-  "w-full border-2 border-[#14b4ba] bg-transparent text-[#14b4ba] py-6 font-bold hover:bg-[#14b4ba] hover:text-white hover:shadow-lg hover:shadow-[#14b4ba]/25 hover:scale-[1.02] transition-all duration-300";
-
 type Props = { initialInviteCode?: string };
 
 export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
@@ -120,7 +114,7 @@ export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
             <h2 className="text-2xl font-black text-slate-100 mb-2">Invalid Invite Link</h2>
             <p className="text-slate-400 mb-6">{error}</p>
             <Link href="/register">
-              <Button className={btnPrimaryJoin}>Back to Registration</Button>
+              <Button variant="gradient" size="xl" className="w-full">Back to Registration</Button>
             </Link>
           </div>
         </motion.div>
@@ -310,13 +304,15 @@ export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
           <div className="flex gap-4 pt-4">
             <Button
               type="submit"
-              className={btnPrimaryJoin}
+              variant="gradient"
+              size="xl"
+              className="flex-1"
               disabled={loading || (teamData !== null && teamData.members.length >= 5)}
             >
               {loading ? "Joining..." : "Join Team"}
             </Button>
             <Link href="/register" className="flex-1">
-              <Button type="button" className={btnOutlineJoin}>
+              <Button type="button" variant="gradientOutline" size="xl" className="w-full">
                 Cancel
               </Button>
             </Link>

@@ -61,9 +61,7 @@ export function Navbar() {
           {/* CTA Button */}
           <div className="hidden md:block">
             <Link href="/register">
-              <Button className="bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white shadow-lg shadow-[#14b4ba]/20">
-                Register Now
-              </Button>
+              <Button variant="gradient">Register Now</Button>
             </Link>
           </div>
 
@@ -99,9 +97,7 @@ export function Navbar() {
                 </a>
               ))}
               <Link href="/register" className="block" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white">
-                  Register Now
-                </Button>
+                <Button variant="gradient" className="w-full">Register Now</Button>
               </Link>
             </div>
           </motion.div>

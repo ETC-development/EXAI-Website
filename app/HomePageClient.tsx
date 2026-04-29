@@ -140,20 +140,13 @@ export default function HomePageClient() {
             className="flex gap-4 justify-center flex-wrap"
           >
             <Link href="/register">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white px-8 py-6 text-lg font-bold border-0 shadow-lg shadow-[#14b4ba]/30 hover:shadow-[#14b4ba]/50 hover:scale-[1.02] transition-all duration-300"
-              >
+              <Button variant="gradient" size="xl">
                 Register Now
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
             <a href="#challenges">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-2 border-[#14b4ba] bg-transparent text-[#14b4ba] px-8 py-6 text-lg font-bold hover:bg-[#14b4ba] hover:text-white hover:shadow-lg hover:shadow-[#14b4ba]/30 hover:scale-[1.02] transition-all duration-300"
-              >
+              <Button variant="gradientOutline" size="xl">
                 Challenge format
               </Button>
             </a>
@@ -269,12 +262,9 @@ export default function HomePageClient() {
           </p>
 
           <Link href="/register">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white px-12 py-8 text-xl font-bold shadow-lg shadow-[#14b4ba]/30 border-0"
-            >
+            <Button variant="gradient" size="xl" className="px-12">
               Register Now
-              <ArrowRight className="ml-2 w-6 h-6" />
+              <ArrowRight className="w-6 h-6" />
             </Button>
           </Link>
         </motion.div>

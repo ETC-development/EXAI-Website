@@ -11,10 +11,12 @@ import {
   CheckSquare,
   LogOut,
   Menu,
-  X
+  X,
+  Home
 } from "lucide-react";
 import { ExaiFullLogo } from "./ExaiLogo";
 import { useState } from "react";
+import { Button } from "./ui/button";
 
 const navItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/admin" },
@@ -101,19 +103,17 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             </div>
             {isSidebarOpen && (
               <>
-                <Link href="/" className="block">
-                  <button className="w-full mt-2 flex items-center gap-2 px-4 py-2 text-slate-400 hover:text-[#14b4ba] transition-colors rounded-lg hover:bg-slate-800/50">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                    <span className="text-sm font-bold">Back to Home</span>
-                  </button>
+                <Link href="/" className="block mt-2">
+                  <Button variant="adminMuted" size="sm" className="w-full justify-start gap-2">
+                    <Home className="w-4 h-4" />
+                    Back to Home
+                  </Button>
                 </Link>
-                <Link href="/admin/login" className="block">
-                  <button className="w-full mt-2 flex items-center gap-2 px-4 py-2 text-slate-400 hover:text-red-400 transition-colors rounded-lg hover:bg-slate-800/50">
+                <Link href="/admin/login" className="block mt-2">
+                  <Button variant="adminDanger" size="sm" className="w-full justify-start gap-2">
                     <LogOut className="w-4 h-4" />
-                    <span className="text-sm font-bold">Logout</span>
-                  </button>
+                    Logout
+                  </Button>
                 </Link>
               </>
             )}

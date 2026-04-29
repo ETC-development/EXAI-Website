@@ -75,7 +75,7 @@ export default function RegistrationStart() {
                 <p className="text-slate-400 text-center mb-6">
                   Start your own team and invite others to join you
                 </p>
-                <Button className="w-full bg-gradient-to-r from-[#14b4ba] to-[#079db5] hover:from-[#0f8f94] hover:to-[#14b4ba] text-white font-bold">
+                <Button variant="gradient" size="xl" className="w-full">
                   Create Team
                 </Button>
               </div>
@@ -98,7 +98,7 @@ export default function RegistrationStart() {
                 <p className="text-slate-400 text-center mb-6">
                   Have an invite link? Join an existing team
                 </p>
-                <Button className="w-full bg-gradient-to-r from-[#079db5] to-[#0f8f94] hover:from-[#14b4ba] hover:to-[#079db5] text-white font-bold">
+                <Button variant="gradient" size="xl" className="w-full">
                   Join Team
                 </Button>
               </div>
@@ -121,7 +121,7 @@ export default function RegistrationStart() {
                 <p className="text-slate-400 text-center mb-6">
                   Register individually and we&apos;ll help you find a team
                 </p>
-                <Button className="w-full bg-gradient-to-r from-[#0f8f94] to-[#14b4ba] hover:from-[#079db5] hover:to-[#0f8f94] text-white font-bold">
+                <Button variant="gradient" size="xl" className="w-full">
                   Register Solo
                 </Button>
               </div>
