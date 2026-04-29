@@ -60,9 +60,17 @@ export function TimelineEvent({ time, title, description, isLast, details }: Tim
   );
 
   return (
-    <div className="relative flex gap-6 pb-8">
+    <motion.div
+      whileHover={{ y: -1 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="relative flex gap-6 pb-8"
+    >
       <div className="flex flex-col items-center">
-        <div className="z-10 h-4 w-4 rounded-full bg-[#14b4ba] shadow-[0_0_10px_rgba(20,180,186,0.6)]" />
+        <motion.div
+          className="z-10 h-4 w-4 rounded-full bg-[#14b4ba] shadow-[0_0_10px_rgba(20,180,186,0.6)]"
+          whileHover={{ scale: 1.18 }}
+          transition={{ duration: 0.2 }}
+        />
         {!isLast && (
           <div className="mt-2 h-full w-0.5 bg-gradient-to-b from-[#14b4ba]/50 to-transparent" />
         )}
@@ -111,6 +119,6 @@ export function TimelineEvent({ time, title, description, isLast, details }: Tim
           )}
         </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 }

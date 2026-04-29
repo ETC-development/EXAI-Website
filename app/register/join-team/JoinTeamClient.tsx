@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { Users, AlertCircle } from "lucide-react";
+import { Users, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
+import { ExaiFullLogo } from "@/app/components/ExaiLogo";
 import { SCHOOLS } from "@/lib/schools";
 
 const yearToApi: Record<string, string> = {
@@ -136,9 +137,7 @@ export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
       >
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-6">
-            <h1 className="text-4xl font-black bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
-              EXAI
-            </h1>
+            <ExaiFullLogo size="medium" />
           </Link>
           <h2 className="text-3xl font-black text-slate-100 mb-2">Join Team</h2>
           <p className="text-slate-400">Complete your registration to join the team</p>
@@ -309,7 +308,14 @@ export default function JoinTeamClient({ initialInviteCode = "" }: Props) {
               className="flex-1"
               disabled={loading || (teamData !== null && teamData.members.length >= 5)}
             >
-              {loading ? "Joining..." : "Join Team"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Joining...
+                </>
+              ) : (
+                "Join Team"
+              )}
             </Button>
             <Link href="/register" className="flex-1">
               <Button type="button" variant="gradientOutline" size="xl" className="w-full">

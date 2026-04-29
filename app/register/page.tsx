@@ -64,10 +64,11 @@ export default function RegistrationStart() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ y: -6, scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
           >
             <Link href="/register/create-team" className="block">
-              <div className="bg-slate-900/80 backdrop-blur-sm border-2 border-slate-700 hover:border-[#14b4ba] rounded-xl p-8 transition-all duration-300 h-full">
+              <div className="bg-slate-900/80 backdrop-blur-sm border-2 border-slate-700 hover:border-[#14b4ba] rounded-xl p-8 transition-all duration-300 h-full hover:shadow-[0_18px_40px_rgba(20,180,186,0.18)]">
                 <div className="w-16 h-16 bg-gradient-to-br from-[#14b4ba] to-[#079db5] rounded-lg flex items-center justify-center mb-6 mx-auto shadow-[0_0_20px_rgba(20,180,186,0.4)]">
                   <Users className="w-8 h-8 text-white" />
                 </div>
@@ -87,10 +88,11 @@ export default function RegistrationStart() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ y: -6, scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
           >
             <Link href="/register/join-team" className="block">
-              <div className="bg-slate-900/80 backdrop-blur-sm border-2 border-slate-700 hover:border-[#079db5] rounded-xl p-8 transition-all duration-300 h-full">
+              <div className="bg-slate-900/80 backdrop-blur-sm border-2 border-slate-700 hover:border-[#079db5] rounded-xl p-8 transition-all duration-300 h-full hover:shadow-[0_18px_40px_rgba(7,157,181,0.18)]">
                 <div className="w-16 h-16 bg-gradient-to-br from-[#079db5] to-[#0f8f94] rounded-lg flex items-center justify-center mb-6 mx-auto shadow-[0_0_20px_rgba(7,157,181,0.4)]">
                   <UserPlus className="w-8 h-8 text-white" />
                 </div>
@@ -110,10 +112,11 @@ export default function RegistrationStart() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ y: -6, scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
           >
             <Link href="/register/solo" className="block">
-              <div className="bg-slate-900/80 backdrop-blur-sm border-2 border-slate-700 hover:border-[#0f8f94] rounded-xl p-8 transition-all duration-300 h-full">
+              <div className="bg-slate-900/80 backdrop-blur-sm border-2 border-slate-700 hover:border-[#0f8f94] rounded-xl p-8 transition-all duration-300 h-full hover:shadow-[0_18px_40px_rgba(15,143,148,0.18)]">
                 <div className="w-16 h-16 bg-gradient-to-br from-[#0f8f94] to-[#14b4ba] rounded-lg flex items-center justify-center mb-6 mx-auto shadow-[0_0_20px_rgba(15,143,148,0.4)]">
                   <User className="w-8 h-8 text-white" />
                 </div>

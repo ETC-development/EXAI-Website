@@ -26,7 +26,16 @@ const LandingBelowFold = dynamic(
     })),
   {
     loading: () => (
-      <div className="py-24 px-4 text-center text-slate-500 text-sm font-bold">Loading…</div>
+      <div className="px-4 py-24">
+        <div className="mx-auto max-w-6xl space-y-8">
+          <div className="mx-auto h-10 w-72 animate-pulse rounded-lg bg-slate-800/80" />
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="h-64 animate-pulse rounded-xl bg-slate-900/80" />
+            <div className="h-64 animate-pulse rounded-xl bg-slate-900/80" />
+            <div className="h-64 animate-pulse rounded-xl bg-slate-900/80" />
+          </div>
+        </div>
+      </div>
     ),
   },
 );
@@ -65,10 +74,10 @@ export default function HomePageClient() {
   }));
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
+    <div className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
       <Navbar />
 
-      <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-10">
+      <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-10">
         <svg className="absolute top-0 right-0 w-1/2 h-1/2" viewBox="0 0 400 400">
           <polygon points="200,0 300,100 200,200 100,100" fill="#14b4ba" />
           <polygon points="300,100 400,200 300,300 200,200" fill="#079db5" />
@@ -76,15 +85,28 @@ export default function HomePageClient() {
           <polygon points="200,200 300,300 200,400 100,300" fill="#14b4ba" opacity="0.5" />
         </svg>
       </div>
+      <div className="pointer-events-none fixed inset-0 opacity-70">
+        <div className="absolute -top-20 left-1/2 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-[#14b4ba]/10 blur-3xl" />
+        <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-[#079db5]/10 blur-3xl" />
+        <div className="absolute right-0 top-1/3 h-80 w-80 rounded-full bg-[#0f8f94]/10 blur-3xl" />
+      </div>
+      <div
+        className="pointer-events-none fixed inset-0 opacity-[0.06]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(255,255,255,0.22) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.22) 1px, transparent 1px)",
+          backgroundSize: "42px 42px",
+        }}
+      />
 
-      <section id="home" className="relative min-h-screen flex items-center justify-center px-4 pt-20">
+      <section id="home" className="relative flex min-h-screen items-center justify-center px-4 pt-20">
         <div className="absolute inset-0 bg-gradient-to-br from-[#14b4ba]/5 via-transparent to-[#079db5]/5"></div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative z-10 text-center max-w-5xl mx-auto"
+          className="relative z-10 mx-auto max-w-5xl text-center"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -99,7 +121,7 @@ export default function HomePageClient() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className="text-7xl md:text-9xl font-black mb-6"
+            className="mb-5 text-7xl font-black leading-[0.9] tracking-tight md:text-9xl"
           >
             <span className="text-[#14b4ba]">EX</span>
             <span className="text-[#079db5]">AI</span>
@@ -109,7 +131,7 @@ export default function HomePageClient() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="text-2xl md:text-3xl text-slate-300 mb-4 font-bold"
+            className="mb-3 text-2xl font-bold tracking-wide text-slate-300 md:text-3xl"
           >
             AI Datathon
           </motion.p>
@@ -118,7 +140,7 @@ export default function HomePageClient() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.8 }}
-            className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto"
+            className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-slate-400 md:text-lg"
           >
             Organized by ENSIA Tech Community
           </motion.p>
@@ -139,32 +161,39 @@ export default function HomePageClient() {
             transition={{ delay: 1.2, duration: 0.6 }}
             className="flex gap-4 justify-center flex-wrap"
           >
-            <Link href="/register">
-              <Button variant="gradient" size="xl">
-                Register Now
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </Link>
-            <a href="#challenges">
-              <Button variant="gradientOutline" size="xl">
-                Challenge format
-              </Button>
-            </a>
+            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+              <Link href="/register">
+                <Button variant="gradient" size="xl">
+                  Register Now
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+              <a href="#challenges">
+                <Button variant="gradientOutline" size="xl">
+                  Challenge format
+                </Button>
+              </a>
+            </motion.div>
           </motion.div>
         </motion.div>
       </section>
 
-      <section id="about" className="relative py-24 px-4">
+      <section id="about" className="relative px-4 py-24 md:py-28">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#14b4ba]/40 to-transparent" />
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="mb-14 text-center md:mb-16"
           >
-            <h2 className="text-5xl md:text-6xl font-black mb-6 text-[#14b4ba]">About EXAI</h2>
-            <div className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed space-y-4">
+            <h2 className="mb-5 text-4xl font-black tracking-tight text-[#14b4ba] md:text-5xl">
+              About EXAI
+            </h2>
+            <div className="mx-auto max-w-3xl space-y-4 text-base leading-relaxed text-slate-300 md:text-lg">
               <p>
                 EXAI is a high-level Artificial Intelligence datathon designed as a proving ground for emerging AI
                 talent. The event brings together highly motivated participants to tackle rigorous, state-of-the-art
@@ -214,17 +243,19 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <section id="challenges" className="relative py-24 px-4 bg-slate-900/30">
+      <section id="challenges" className="relative bg-slate-900/30 px-4 py-24 md:py-28">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#079db5]/40 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(20,180,186,0.09),transparent_45%)]" />
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="mb-14 text-center md:mb-16"
           >
-            <h2 className="text-5xl md:text-6xl font-black mb-6 text-[#14b4ba]">Challenges</h2>
-            <p className="text-xl text-slate-300 max-w-2xl mx-auto">
+            <h2 className="mb-5 text-4xl font-black tracking-tight text-[#14b4ba] md:text-5xl">Challenges</h2>
+            <p className="mx-auto max-w-2xl text-base leading-relaxed text-slate-300 md:text-lg">
               EXAI is not simply a competition. It is an immersive environment where participants demonstrate advanced
               technical ability, creativity, and problem-solving skills under realistic constraints.
             </p>
@@ -248,7 +279,9 @@ export default function HomePageClient() {
 
       <LandingBelowFold mentors={mentors} />
 
-      <section className="relative py-32 px-4 bg-slate-900/30">
+      <section className="relative bg-slate-900/30 px-4 py-28 md:py-32">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#14b4ba]/45 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(20,180,186,0.12),transparent_60%)]" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -256,8 +289,8 @@ export default function HomePageClient() {
           transition={{ duration: 0.6 }}
           className="max-w-4xl mx-auto text-center"
         >
-          <h2 className="text-5xl md:text-6xl font-black mb-6 text-slate-100">Ready to Compete?</h2>
-          <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
+          <h2 className="mb-5 text-4xl font-black tracking-tight text-slate-100 md:text-5xl">Ready to Compete?</h2>
+          <p className="mx-auto mb-10 max-w-2xl text-base leading-relaxed text-slate-300 md:mb-12 md:text-lg">
             Join ETC&apos;s most exciting AI Datathon. Limited spots available!
           </p>
 

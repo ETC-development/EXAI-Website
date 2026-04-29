@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { Copy, Check, ChevronRight, ChevronLeft } from "lucide-react";
+import { Copy, Check, ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
@@ -452,7 +452,14 @@ export default function CreateTeamPage() {
                 Back
               </Button>
               <Button type="submit" disabled={loading} variant="gradient" size="xl" className="flex-1">
-                {loading ? "Creating..." : "Create team & get invite link"}
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  "Create team & get invite link"
+                )}
               </Button>
             </div>
           </form>

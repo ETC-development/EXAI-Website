@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
@@ -244,7 +245,14 @@ export default function SoloRegistration() {
 
           <div className="flex gap-4 pt-4">
             <Button type="submit" variant="gradient" size="xl" className="flex-1" disabled={loading}>
-              {loading ? "Registering..." : "Register"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Registering...
+                </>
+              ) : (
+                "Register"
+              )}
             </Button>
             <Link href="/register" className="flex-1">
               <Button type="button" variant="gradientOutline" size="xl" className="w-full">

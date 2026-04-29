@@ -48,21 +48,26 @@ export function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a
+              <motion.a
                 key={link.name}
                 href={link.href}
-                className="text-slate-300 hover:text-[#14b4ba] transition-colors duration-200 font-medium"
+                whileHover={{ y: -1 }}
+                transition={{ duration: 0.2 }}
+                className="group relative text-slate-300 transition-colors duration-200 font-medium hover:text-[#14b4ba]"
               >
                 {link.name}
-              </a>
+                <span className="absolute -bottom-1 left-0 h-0.5 w-full origin-left scale-x-0 bg-gradient-to-r from-[#14b4ba] to-[#079db5] transition-transform duration-300 group-hover:scale-x-100" />
+              </motion.a>
             ))}
           </div>
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <Link href="/register">
-              <Button variant="gradient">Register Now</Button>
-            </Link>
+            <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}>
+              <Link href="/register">
+                <Button variant="gradient">Register Now</Button>
+              </Link>
+            </motion.div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -87,14 +92,16 @@ export function Navbar() {
           >
             <div className="px-4 py-6 space-y-4">
               {navLinks.map((link) => (
-                <a
+                <motion.a
                   key={link.name}
                   href={link.href}
+                  whileHover={{ x: 4 }}
+                  transition={{ duration: 0.2 }}
                   className="block text-slate-300 hover:text-[#14b4ba] transition-colors font-medium py-2"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {link.name}
-                </a>
+                </motion.a>
               ))}
               <Link href="/register" className="block" onClick={() => setIsMobileMenuOpen(false)}>
                 <Button variant="gradient" className="w-full">Register Now</Button>
