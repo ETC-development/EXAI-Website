@@ -10,3 +10,4 @@ supabase/*
 scripts
 test
 test/*
+pnpm-lock.yaml
